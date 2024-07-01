@@ -1,0 +1,17 @@
+.env
+
+
+# Mage folders
+.file_versions
+.ssh_tunnel
+.variables
+.cache
+
+# Python
+__pycache__
+
+# Data
+mlflow.db
+*.parquet
+*.csv
+
