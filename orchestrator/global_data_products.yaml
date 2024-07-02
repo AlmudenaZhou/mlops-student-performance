@@ -1,0 +1,5 @@
+training_data:
+  object_type: pipeline
+  object_uuid: data_processing
+  settings:
+    transformations: {}
