@@ -3,6 +3,10 @@ blocks:
   color: null
   configuration:
     global_data_product:
+      outdated_after:
+        months: -1
+        seconds: null
+        weeks: 1
       uuid: training_data
   downstream_blocks:
   - model_training
@@ -11,12 +15,30 @@ blocks:
   has_callback: false
   language: python
   name: training_data
-  retry_config: null
-  status: not_executed
-  timeout: null
+  retry_config:
+    retries: 2
+  status: executed
+  timeout: '99'
   type: global_data_product
   upstream_blocks: []
   uuid: training_data
+- all_upstream_blocks_executed: true
+  color: null
+  configuration: {}
+  downstream_blocks:
+  - model_registry
+  executor_config: null
+  executor_type: local_python
+  has_callback: false
+  language: python
+  name: model_training
+  retry_config: null
+  status: updated
+  timeout: null
+  type: transformer
+  upstream_blocks:
+  - training_data
+  uuid: model_training
 - all_upstream_blocks_executed: false
   color: null
   configuration: {}
@@ -25,14 +47,14 @@ blocks:
   executor_type: local_python
   has_callback: false
   language: python
-  name: model_training
+  name: model_registry
   retry_config: null
-  status: not_executed
+  status: executed
   timeout: null
   type: transformer
   upstream_blocks:
-  - training_data
-  uuid: model_training
+  - model_training
+  uuid: model_registry
 cache_block_output_in_memory: false
 callbacks: []
 concurrency_config: {}
@@ -54,7 +76,7 @@ settings:
 spark_config: {}
 tags: []
 type: python
-updated_at: null
+updated_at: '2024-07-12 22:53:46'
 uuid: model_training
-variables_dir: /home/src/mage_data/src
+variables_dir: /home/src/mage_data/student-performance
 widgets: []

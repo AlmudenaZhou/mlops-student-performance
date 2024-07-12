@@ -3,7 +3,7 @@ services:
     image: mageai/mageai:latest
     command: mage start ${PROJECT_NAME}
     env_file:
-      - ../.env
+      - .env
     build:
       context: .
       dockerfile: mage.dockerfile
@@ -12,7 +12,6 @@ services:
     volumes:
       - ../data:/home/src/data
       - .:/home/src
-      - ../requirements.txt:/home/src/requirements.txt
     restart: on-failure:5
     networks:
       - app-network
@@ -25,7 +24,7 @@ services:
     ports:
       - "5000:5000"
     volumes:
-      - "../mlflow:/home/mlflow/"
+      - "../mlflow_db:/home/mlflow/"
     networks:
       - app-network
 networks:

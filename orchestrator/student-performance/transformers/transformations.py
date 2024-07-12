@@ -12,9 +12,6 @@ if 'test' not in globals():
 
 @transformer
 def transform(data, *args, **kwargs):
-    
-    mlflow.set_tracking_uri("http://mlflow:5000")
-    mlflow.set_experiment("student-performance")
 
     df_data = [pd.DataFrame(ind_data) for ind_data in data]
 
@@ -30,8 +27,6 @@ def transform(data, *args, **kwargs):
 
     with open('minmax_scaler.bin', 'wb') as f_out:
         pickle.dump(sc, f_out)
-    
-    mlflow.log_artifact(local_path="minmax_scaler.bin", artifact_path="minmax_scaler")
 
     x_sc_val = sc.transform(X_val.loc[:, minmax_cols])
     X_val.loc[:, minmax_cols] = x_sc_val

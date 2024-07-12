@@ -71,6 +71,12 @@ It consists in 2 pipelines:
     - Best model selection with the validation set
     - Register the chosen model and save it to S3
 
+
+
+
+    - MLFlow:
+        - To the notebook in the terminal run: `mlflow server --backend-store-uri sqlite:///mlflow_db/mlflow.db --default-artifact-root artifacts`
+
 ## Future steps
 - Migrate Training Pipeline to cloud
 - Model tracking and versioning to cloud
