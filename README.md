@@ -75,7 +75,7 @@ It consists in 2 pipelines:
 
 
     - MLFlow:
-        - To the notebook in the terminal run: `mlflow server --backend-store-uri sqlite:///mlflow_db/mlflow.db --default-artifact-root artifacts`
+        - To the notebook in the terminal run: `mlflow server -h 127.0.0.1 -p 5000 --backend-store-uri sqlite:///mlflow_db/mlflow.db --default-artifact-root s3://mlflow-artifact-student-performance`
 
 ## Future steps
 - Migrate Training Pipeline to cloud
