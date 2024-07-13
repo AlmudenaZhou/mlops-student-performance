@@ -19,4 +19,4 @@ def split_data(data, output_folder):
     X_val_test, y_val_test, test_size=0.5, random_state=42, stratify=y_val_test)
 
     rwp = ReadWriteParquet()
-    
+    rwp
