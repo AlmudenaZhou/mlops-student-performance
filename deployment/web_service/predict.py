@@ -1,22 +1,25 @@
 import os
-
-from flask import Flask, request, jsonify
-from dotenv import load_dotenv
-
-
 import sys
-cwd = os.getcwd()
-sys.path.append(cwd) 
-print(sys.path)
+sys.path.append(os.getcwd())
+
+from dotenv import load_dotenv
+from flask import Flask, request, jsonify
 
 from scripts import load_models, predict
 
 
+MLFLOW_TRACKING_URI = os.getenv("MLFLOW_TRACKING_URI", None)
+print(MLFLOW_TRACKING_URI)
+
 load_dotenv()
+
+if MLFLOW_TRACKING_URI is not None: 
+    os.environ["MLFLOW_TRACKING_URI"] = MLFLOW_TRACKING_URI
+
+print(MLFLOW_TRACKING_URI)
 
 RUN_ID = os.getenv("RUN_ID")
 EXPERIMENT_NAME = os.getenv("EXPERIMENT_NAME")
-
 model, scaler = load_models()
 
 print("model and scaler downloaded")

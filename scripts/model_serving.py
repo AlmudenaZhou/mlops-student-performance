@@ -1,5 +1,6 @@
 import os
 
+import boto3
 import pickle
 import mlflow
 from mlflow import MlflowClient
@@ -9,21 +10,18 @@ import pandas as pd
 def load_models():
 
     BUCKET_NAME = os.getenv("BUCKET_NAME")
-    EXPERIMENT_NAME = os.getenv("EXPERIMENT_NAME")
     RUN_ID = os.getenv("RUN_ID")
     ARTIFACT_FOLDER = os.getenv("ARTIFACT_FOLDER")
     MODEL_FOLDER = os.getenv("MODEL_FOLDER")
     MLFLOW_TRACKING_URI = os.getenv("MLFLOW_TRACKING_URI")
+    EXPERIMENT_ID = os.getenv("EXPERIMENT_ID")
 
-    mlflow.set_tracking_uri(MLFLOW_TRACKING_URI)
-    experiment_id = [experiment.experiment_id for experiment in mlflow.search_experiments()
-                    if experiment.name == EXPERIMENT_NAME][0]
-    
-    artefacts_uri = f's3://{BUCKET_NAME}/{experiment_id}/{RUN_ID}/artifacts'
+    artefacts_uri = f's3://{BUCKET_NAME}/{EXPERIMENT_ID}/{RUN_ID}/artifacts'
 
-    model = load_model(artefacts_uri, MODEL_FOLDER)
+    #model = load_model(artefacts_uri, MODEL_FOLDER)
+    model = None
 
-    scaler = load_scaler(MLFLOW_TRACKING_URI, RUN_ID, ARTIFACT_FOLDER)
+    scaler = load_scaler(artefacts_uri, MLFLOW_TRACKING_URI, RUN_ID, ARTIFACT_FOLDER)
 
     return model, scaler
 
@@ -34,15 +32,27 @@ def load_model(artefacts_uri, MODEL_FOLDER):
     return model
 
 
-def load_scaler(MLFLOW_TRACKING_URI, RUN_ID, ARTIFACT_FOLDER):
+def load_scaler(artefacts_uri, MLFLOW_TRACKING_URI, RUN_ID, ARTIFACT_FOLDER):
+    artefacts_uri = artefacts_uri + f"/{ARTIFACT_FOLDER}/minmax_scaler.bin"
     artifact_path = os.path.join(ARTIFACT_FOLDER, "minmax_scaler.bin")
 
     if not os.path.exists(artifact_path):
-        client = MlflowClient(tracking_uri=MLFLOW_TRACKING_URI)
-        client.download_artifacts(run_id=RUN_ID, path=ARTIFACT_FOLDER, dst_path='.')
+        if MLFLOW_TRACKING_URI:
+            client = MlflowClient(tracking_uri=MLFLOW_TRACKING_URI)
+            client.download_artifacts(run_id=RUN_ID, path=ARTIFACT_FOLDER, dst_path='.')
+        else:
+            s3 = boto3.resource('s3')
+            parts = artefacts_uri.removeprefix('s3://').split('/', 1)
+            bucket, key = parts
 
-    with open(f"{ARTIFACT_FOLDER}/minmax_scaler.bin", "rb") as f_in:
+            os.makedirs(ARTIFACT_FOLDER, exist_ok=True)
+            print(bucket, key)
+            with open(artifact_path, 'wb') as data:
+                s3.Bucket(bucket).download_fileobj(key, data)
+
+    with open(artifact_path, "rb") as f_in:
         scaler = pickle.load(f_in)
+
     return scaler
 
 
