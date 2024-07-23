@@ -28,10 +28,16 @@ run_flask_with_mlflow:
 .PHONY: run_web_test
 run_web_test: 
 	@echo "Running tests with MLFLOW_TRACKING_URI set to an empty string..."
-	call .venv/Scripts/activate && set MLFLOW_TRACKING_URI= && start /B python ./deployment/web_service/predict.py > flask.log 2>&1
+	call .venv/Scripts/activate && set MLFLOW_TRACKING_URI=&& set TEST_RUN=True&& start /B python ./deployment/web_service/predict.py > flask.log 2>&1
 	ping -n 10 127.0.0.1 > NUL
-	call .venv/Scripts/activate&& set MLFLOW_TRACKING_URI= && python ./deployment/web_service/test.py
+	call .venv/Scripts/activate&& set MLFLOW_TRACKING_URI=&& python ./deployment/web_service/test.py
 	@$(MAKE) clean
+
+run_streamings_lambda:
+	set TEST_RUN=True&& start /B python .\deployment\streaming\lambda_function.py
+
+run_unit_tests:
+	call .venv/Scripts/activate&&python -m pytest .\tests\unit_tests\
 
 # Clean up background jobs (if needed)
 .PHONY: clean

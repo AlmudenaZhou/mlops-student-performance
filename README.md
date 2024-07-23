@@ -91,8 +91,7 @@ It consists in 2 pipelines:
 1. Enter `http://localhost:6789/` to see the mage ui. Optionally, you can enter to `http://localhost:5000/` to check if mlflow is running correctly
 1. Inside Mage, go to pipelines and run first the preprocessing pipeline to generate the data for training the model
 1. Run the model pipeline to save automatically the best model in the s3 bucket with its version and the preprocessing model, along with the results of all the experiments that have been done.
-1. Check that the experiment folder `1` is in your S3
-bucket.
+1. Check that the experiment folder `1` is in your S3 bucket.
 
 ## Model Serving
 

@@ -4,10 +4,11 @@ sys.path.append(os.getcwd())
 
 from flask import Flask, request, jsonify
 
-from scripts import load_models, predict
+from scripts import load_models, ModelService
 
 
 TEST_RUN = os.getenv("TEST_RUN", "False") == "True"
+
 
 if TEST_RUN:
     MLFLOW_TRACKING_URI = os.getenv("MLFLOW_TRACKING_URI", None)
@@ -21,7 +22,10 @@ if TEST_RUN:
 
 RUN_ID = os.getenv("RUN_ID")
 EXPERIMENT_NAME = os.getenv("EXPERIMENT_NAME")
+
 model, scaler = load_models()
+print(model, scaler)
+model_service = ModelService(model, scaler)
 
 print("model and scaler downloaded")
 app = Flask(EXPERIMENT_NAME)
@@ -31,7 +35,7 @@ app = Flask(EXPERIMENT_NAME)
 def predict_endpoint():
     student = request.get_json()
 
-    pred = predict(model, scaler, student)
+    pred = model_service.predict(student)
 
     result = {
         'GPA': pred,

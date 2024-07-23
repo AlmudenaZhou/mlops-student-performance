@@ -1,1 +1,1 @@
-from .model_serving import load_models, predict
+from .model_serving import load_models, init_model_service, ModelService

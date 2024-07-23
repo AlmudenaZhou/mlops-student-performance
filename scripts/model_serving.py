@@ -19,7 +19,8 @@ def load_models():
 
     artefacts_uri = f's3://{BUCKET_NAME}/{EXPERIMENT_ID}/{RUN_ID}/artifacts'
 
-    model = None
+    print(artefacts_uri)
+    model = load_model(artefacts_uri, "mlruns")
 
     scaler = load_scaler(artefacts_uri, MLFLOW_TRACKING_URI, RUN_ID, ARTIFACT_FOLDER)
 
@@ -63,25 +64,34 @@ def base64_decode(encoded_data):
 
 
 class ModelService:
-    def __init__(self, model, model_version=None, callbacks=None):
-        self.model = model
+    def __init__(self, model, scaler, model_version=None, callbacks=None):
+        self.model, self.scaler = model, scaler
         self.model_version = model_version
         self.callbacks = callbacks or []
 
-    def preprocessing(self, scaler, raw_data: pd.DataFrame):
+    def preprocessing(self, raw_data: pd.DataFrame):
         new_data = raw_data.copy()
         minmax_cols = ['ParentalEducation', 'StudyTimeWeekly',
-                    'Absences', 'ParentalSupport']
-        x_sc = scaler.transform(raw_data.loc[:, minmax_cols])
+                       'Absences', 'ParentalSupport']
+        x_sc = self.scaler.transform(raw_data.loc[:, minmax_cols])
         new_data.loc[:, minmax_cols] = x_sc
+        
+        columns_to_drop = ['StudentID', 'Age', 'Gender', 'Ethnicity']
+        new_data.drop(columns_to_drop, axis=1, inplace=True)
 
+        print(new_data.to_dict())
         return new_data
-
-    def predict(self, model, scaler, raw_data):
-        df_data = pd.DataFrame([raw_data])
-        features = self.preprocessing(scaler, df_data)
-        pred = model.predict(features)
+    
+    def only_predict(self, features):
+        pred = self.model.predict(features)
         return float(pred[0])
+
+    def predict(self, raw_data):
+        df_data = pd.DataFrame([raw_data]) 
+        print(df_data)
+        features = self.preprocessing(df_data)
+        pred = self.only_predict(features)
+        return pred
 
     def lambda_handler(self, event):
 
@@ -89,16 +99,16 @@ class ModelService:
 
         for record in event['Records']:
             encoded_data = record['kinesis']['data']
+            print(encoded_data)
             student_event = base64_decode(encoded_data)
 
             student = student_event['student']
             student_id = student_event['student_id']
 
-            features = self.prepare_features(student)
-            prediction = self.predict(features)
+            prediction = self.predict(student)
 
             prediction_event = {
-                'model': '',
+                'model': 'student-performance',
                 'version': self.model_version,
                 'prediction': {'GPA': prediction, 'student_id': student_id},
             }
@@ -107,6 +117,7 @@ class ModelService:
                 callback(prediction_event)
 
             predictions_events.append(prediction_event)
+        print(predictions_events)
 
         return {'predictions': predictions_events}
 
@@ -117,12 +128,12 @@ class KinesisCallback:
         self.prediction_stream_name = prediction_stream_name
 
     def put_record(self, prediction_event):
-        ride_id = prediction_event['prediction']['ride_id']
+        studemt_id = prediction_event['prediction']['student_id']
 
         self.kinesis_client.put_record(
             StreamName=self.prediction_stream_name,
             Data=json.dumps(prediction_event),
-            PartitionKey=str(ride_id),
+            PartitionKey=str(studemt_id),
         )
 
 
@@ -135,8 +146,7 @@ def create_kinesis_client():
     return boto3.client('kinesis', endpoint_url=endpoint_url)
 
 
-def init(prediction_stream_name: str, run_id: str, test_run: bool):
-    model = load_model(run_id)
+def init_model_service(prediction_stream_name: str, run_id: str, test_run: bool):
 
     callbacks = []
 
@@ -145,6 +155,8 @@ def init(prediction_stream_name: str, run_id: str, test_run: bool):
         kinesis_callback = KinesisCallback(kinesis_client, prediction_stream_name)
         callbacks.append(kinesis_callback.put_record)
 
-    model_service = ModelService(model=model, model_version=run_id, callbacks=callbacks)
+    model, scaler = load_models()
+
+    model_service = ModelService(model=model, scaler=scaler, model_version=run_id, callbacks=callbacks)
 
     return model_service
