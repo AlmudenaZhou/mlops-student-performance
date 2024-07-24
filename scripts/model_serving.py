@@ -1,12 +1,12 @@
-import os
-
-import json
 import base64
-import boto3
+import json
+import os
 import pickle
+
+import boto3
 import mlflow
-from mlflow import MlflowClient
 import pandas as pd
+from mlflow import MlflowClient
 
 
 def load_models():
@@ -17,7 +17,7 @@ def load_models():
     MLFLOW_TRACKING_URI = os.getenv("MLFLOW_TRACKING_URI")
     EXPERIMENT_ID = os.getenv("EXPERIMENT_ID")
 
-    artefacts_uri = f's3://{BUCKET_NAME}/{EXPERIMENT_ID}/{RUN_ID}/artifacts'
+    artefacts_uri = f"s3://{BUCKET_NAME}/{EXPERIMENT_ID}/{RUN_ID}/artifacts"
 
     print(artefacts_uri)
     model = load_model(artefacts_uri, "mlruns")
@@ -27,8 +27,8 @@ def load_models():
     return model, scaler
 
 
-def load_model(artefacts_uri, MODEL_FOLDER): 
-    model_uri = f'{artefacts_uri}/{MODEL_FOLDER}'
+def load_model(artefacts_uri, MODEL_FOLDER):
+    model_uri = f"{artefacts_uri}/{MODEL_FOLDER}"
     model = mlflow.pyfunc.load_model(model_uri)
     return model
 
@@ -40,15 +40,15 @@ def load_scaler(artefacts_uri, MLFLOW_TRACKING_URI, RUN_ID, ARTIFACT_FOLDER):
     if not os.path.exists(artifact_path):
         if MLFLOW_TRACKING_URI:
             client = MlflowClient(tracking_uri=MLFLOW_TRACKING_URI)
-            client.download_artifacts(run_id=RUN_ID, path=ARTIFACT_FOLDER, dst_path='.')
+            client.download_artifacts(run_id=RUN_ID, path=ARTIFACT_FOLDER, dst_path=".")
         else:
-            s3 = boto3.resource('s3')
-            parts = artefacts_uri.removeprefix('s3://').split('/', 1)
+            s3 = boto3.resource("s3")
+            parts = artefacts_uri.removeprefix("s3://").split("/", 1)
             bucket, key = parts
 
             os.makedirs(ARTIFACT_FOLDER, exist_ok=True)
             print(bucket, key)
-            with open(artifact_path, 'wb') as data:
+            with open(artifact_path, "wb") as data:
                 s3.Bucket(bucket).download_fileobj(key, data)
 
     with open(artifact_path, "rb") as f_in:
@@ -58,7 +58,7 @@ def load_scaler(artefacts_uri, MLFLOW_TRACKING_URI, RUN_ID, ARTIFACT_FOLDER):
 
 
 def base64_decode(encoded_data):
-    decoded_data = base64.b64decode(encoded_data).decode('utf-8')
+    decoded_data = base64.b64decode(encoded_data).decode("utf-8")
     ride_event = json.loads(decoded_data)
     return ride_event
 
@@ -71,23 +71,27 @@ class ModelService:
 
     def preprocessing(self, raw_data: pd.DataFrame):
         new_data = raw_data.copy()
-        minmax_cols = ['ParentalEducation', 'StudyTimeWeekly',
-                       'Absences', 'ParentalSupport']
+        minmax_cols = [
+            "ParentalEducation",
+            "StudyTimeWeekly",
+            "Absences",
+            "ParentalSupport",
+        ]
         x_sc = self.scaler.transform(raw_data.loc[:, minmax_cols])
         new_data.loc[:, minmax_cols] = x_sc
-        
-        columns_to_drop = ['StudentID', 'Age', 'Gender', 'Ethnicity']
+
+        columns_to_drop = ["StudentID", "Age", "Gender", "Ethnicity"]
         new_data.drop(columns_to_drop, axis=1, inplace=True)
 
         print(new_data.to_dict())
         return new_data
-    
+
     def only_predict(self, features):
         pred = self.model.predict(features)
         return float(pred[0])
 
     def predict(self, raw_data):
-        df_data = pd.DataFrame([raw_data]) 
+        df_data = pd.DataFrame([raw_data])
         print(df_data)
         features = self.preprocessing(df_data)
         pred = self.only_predict(features)
@@ -97,20 +101,20 @@ class ModelService:
 
         predictions_events = []
 
-        for record in event['Records']:
-            encoded_data = record['kinesis']['data']
+        for record in event["Records"]:
+            encoded_data = record["kinesis"]["data"]
             print(encoded_data)
             student_event = base64_decode(encoded_data)
 
-            student = student_event['student']
-            student_id = student_event['student_id']
+            student = student_event["student"]
+            student_id = student_event["student_id"]
 
             prediction = self.predict(student)
 
             prediction_event = {
-                'model': 'student-performance',
-                'version': self.model_version,
-                'prediction': {'GPA': prediction, 'student_id': student_id},
+                "model": "student-performance",
+                "version": self.model_version,
+                "prediction": {"GPA": prediction, "student_id": student_id},
             }
 
             for callback in self.callbacks:
@@ -119,7 +123,7 @@ class ModelService:
             predictions_events.append(prediction_event)
         print(predictions_events)
 
-        return {'predictions': predictions_events}
+        return {"predictions": predictions_events}
 
 
 class KinesisCallback:
@@ -128,7 +132,7 @@ class KinesisCallback:
         self.prediction_stream_name = prediction_stream_name
 
     def put_record(self, prediction_event):
-        studemt_id = prediction_event['prediction']['student_id']
+        studemt_id = prediction_event["prediction"]["student_id"]
 
         self.kinesis_client.put_record(
             StreamName=self.prediction_stream_name,
@@ -138,12 +142,12 @@ class KinesisCallback:
 
 
 def create_kinesis_client():
-    endpoint_url = os.getenv('KINESIS_ENDPOINT_URL')
+    endpoint_url = os.getenv("KINESIS_ENDPOINT_URL")
 
     if endpoint_url is None:
-        return boto3.client('kinesis')
+        return boto3.client("kinesis")
 
-    return boto3.client('kinesis', endpoint_url=endpoint_url)
+    return boto3.client("kinesis", endpoint_url=endpoint_url)
 
 
 def init_model_service(prediction_stream_name: str, run_id: str, test_run: bool):
@@ -157,6 +161,8 @@ def init_model_service(prediction_stream_name: str, run_id: str, test_run: bool)
 
     model, scaler = load_models()
 
-    model_service = ModelService(model=model, scaler=scaler, model_version=run_id, callbacks=callbacks)
+    model_service = ModelService(
+        model=model, scaler=scaler, model_version=run_id, callbacks=callbacks
+    )
 
     return model_service

@@ -1,34 +1,33 @@
 import mlflow
-from mlflow.store.artifact.runs_artifact_repo import RunsArtifactRepository
 from mlflow.entities import ViewType
+from mlflow.store.artifact.runs_artifact_repo import RunsArtifactRepository
 from mlflow.tracking import MlflowClient
 
-
-if 'transformer' not in globals():
+if "transformer" not in globals():
     from mage_ai.data_preparation.decorators import transformer
-if 'test' not in globals():
+if "test" not in globals():
     from mage_ai.data_preparation.decorators import test
 
 
 def register_model():
     client = MlflowClient(tracking_uri="http://mlflow:5000")
-    experiment_name = 'student-performance'
+    experiment_name = "student-performance"
 
-    experiment_id = [experiment.experiment_id for experiment in client.search_experiments() 
-                 if experiment.name == experiment_name]
+    experiment_id = [
+        experiment.experiment_id
+        for experiment in client.search_experiments()
+        if experiment.name == experiment_name
+    ]
 
     run = client.search_runs(
         experiment_ids=experiment_id,
         run_view_type=ViewType.ACTIVE_ONLY,
-        order_by=["metrics.accuracy DESC"]
+        order_by=["metrics.accuracy DESC"],
     )[0]
 
     run_id = run.info.run_id
 
-    mlflow.register_model(
-        model_uri=f"runs:/{run_id}/models",
-        name=experiment_name
-    )
+    mlflow.register_model(model_uri=f"runs:/{run_id}/models", name=experiment_name)
 
     model_uri = f"runs:/{run_id}/model"
 
@@ -42,10 +41,10 @@ def register_model():
         name=experiment_name,
         version=model_version,
         stage=new_stage,
-        archive_existing_versions=False
+        archive_existing_versions=False,
     )
 
 
 @transformer
 def transform(data, *args, **kwargs):
-    register_model() 
+    register_model()

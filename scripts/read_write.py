@@ -1,17 +1,14 @@
-import os 
+import os
+
 import pandas as pd
 
 
 class ReadWriteParquet:
     def __init__(self) -> None:
-        self.endpoint_url = os.getenv('S3_ENDPOINT_URL', None)
+        self.endpoint_url = os.getenv("S3_ENDPOINT_URL", None)
 
-        self.options = {
-                'client_kwargs': {
-                    'endpoint_url': self.endpoint_url
-                }
-            }
-        
+        self.options = {"client_kwargs": {"endpoint_url": self.endpoint_url}}
+
     def read_data(self, filename):
 
         if self.endpoint_url:
@@ -25,10 +22,10 @@ class ReadWriteParquet:
         if self.endpoint_url:
             df.to_parquet(
                 filename,
-                engine='pyarrow',
+                engine="pyarrow",
                 compression=None,
                 index=False,
-                storage_options=self.options
+                storage_options=self.options,
             )
         else:
-            df.to_parquet(filename, engine='pyarrow', index=False)
+            df.to_parquet(filename, engine="pyarrow", index=False)
