@@ -1,1 +1,1 @@
-from .model_serving import ModelService, init_model_service, load_models
+from .model_serving import ModelService, load_models, init_model_service

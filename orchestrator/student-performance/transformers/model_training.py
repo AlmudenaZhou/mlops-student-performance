@@ -3,12 +3,12 @@ from functools import partial
 import mlflow
 import pandas as pd
 import scipy.stats as stats
-from hyperopt import STATUS_OK, Trials, fmin, hp, space_eval, tpe
-from sklearn.ensemble import RandomForestClassifier
-from sklearn.metrics import accuracy_score, f1_score, roc_auc_score
+from xgboost import XGBClassifier
+from hyperopt import STATUS_OK, Trials, hp, tpe, fmin, space_eval
 from sklearn.svm import SVC
 from sklearn.tree import DecisionTreeClassifier
-from xgboost import XGBClassifier
+from sklearn.metrics import f1_score, roc_auc_score, accuracy_score
+from sklearn.ensemble import RandomForestClassifier
 
 if "transformer" not in globals():
     from mage_ai.data_preparation.decorators import transformer

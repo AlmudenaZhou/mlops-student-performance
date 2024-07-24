@@ -1,7 +1,7 @@
 import mlflow
 from mlflow.entities import ViewType
-from mlflow.store.artifact.runs_artifact_repo import RunsArtifactRepository
 from mlflow.tracking import MlflowClient
+from mlflow.store.artifact.runs_artifact_repo import RunsArtifactRepository
 
 if "transformer" not in globals():
     from mage_ai.data_preparation.decorators import transformer
