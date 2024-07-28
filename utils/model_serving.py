@@ -2,11 +2,17 @@ import os
 import json
 import base64
 import pickle
+import logging
 
 import boto3
 import mlflow
 import pandas as pd
 from mlflow import MlflowClient
+
+
+logging.basicConfig(level=logging.INFO, format='%(asctime)s - %(levelname)s - %(message)s')
+logger = logging.getLogger(__name__)
+logger.setLevel(10)
 
 
 def load_models():
@@ -16,6 +22,16 @@ def load_models():
     ARTIFACT_FOLDER = os.getenv("ARTIFACT_FOLDER")
     MLFLOW_TRACKING_URI = os.getenv("MLFLOW_TRACKING_URI")
     EXPERIMENT_ID = os.getenv("EXPERIMENT_ID")
+    MODEL_LOCATION = os.getenv("MODEL_LOCATION", "")
+
+    if MODEL_LOCATION:
+        model_path = os.path.join(MODEL_LOCATION, "mlruns", "model.pkl")
+        model = load_binary_file_from_local_path(model_path)
+
+        scaler_path = os.path.join(MODEL_LOCATION, "minmax_scaler", "minmax_scaler.bin")
+        scaler = load_binary_file_from_local_path(scaler_path)
+
+        return model, scaler
 
     artefacts_uri = f"s3://{BUCKET_NAME}/{EXPERIMENT_ID}/{RUN_ID}/artifacts"
 
@@ -31,6 +47,13 @@ def load_model(artefacts_uri, MODEL_FOLDER):
     model_uri = f"{artefacts_uri}/{MODEL_FOLDER}"
     model = mlflow.pyfunc.load_model(model_uri)
     return model
+
+
+def load_binary_file_from_local_path(file_path):
+    with open(file_path, "rb") as f_in:
+        content = pickle.load(f_in)
+
+    return content
 
 
 def load_scaler(artefacts_uri, MLFLOW_TRACKING_URI, RUN_ID, ARTIFACT_FOLDER):
@@ -51,8 +74,7 @@ def load_scaler(artefacts_uri, MLFLOW_TRACKING_URI, RUN_ID, ARTIFACT_FOLDER):
             with open(artifact_path, "wb") as data:
                 s3.Bucket(bucket).download_fileobj(key, data)
 
-    with open(artifact_path, "rb") as f_in:
-        scaler = pickle.load(f_in)
+    scaler = load_binary_file_from_local_path(artifact_path)
 
     return scaler
 
@@ -68,8 +90,10 @@ class ModelService:
         self.model, self.scaler = model, scaler
         self.model_version = model_version
         self.callbacks = callbacks or []
+        logger.info("ModelService initialized with model version: %s", model_version)
 
     def preprocessing(self, raw_data: pd.DataFrame):
+        logger.info("Starting preprocessing")
         new_data = raw_data.copy()
         minmax_cols = [
             "ParentalEducation",
@@ -83,27 +107,29 @@ class ModelService:
         columns_to_drop = ["StudentID", "Age", "Gender", "Ethnicity"]
         new_data.drop(columns_to_drop, axis=1, inplace=True)
 
-        print(new_data.to_dict())
+        logger.info("Preprocessed data: %s", new_data.to_dict())
         return new_data
 
     def only_predict(self, features):
         pred = self.model.predict(features)
+        logger.info("Prediction result: %f", float(pred[0]))
         return float(pred[0])
 
     def predict(self, raw_data):
+        logger.info("Starting prediction for raw data: %s", raw_data)
         df_data = pd.DataFrame([raw_data])
-        print(df_data)
         features = self.preprocessing(df_data)
         pred = self.only_predict(features)
         return pred
 
     def lambda_handler(self, event):
+        logger.info("Lambda handler received event: %s", event)
 
         predictions_events = []
 
         for record in event["Records"]:
             encoded_data = record["kinesis"]["data"]
-            print(encoded_data)
+            logger.info("Encoded data from Kinesis: %s", encoded_data)
             student_event = base64_decode(encoded_data)
 
             student = student_event["student"]
@@ -121,7 +147,7 @@ class ModelService:
                 callback(prediction_event)
 
             predictions_events.append(prediction_event)
-        print(predictions_events)
+        logger.info("Prediction events: %s", predictions_events)
 
         return {"predictions": predictions_events}
 
@@ -130,39 +156,47 @@ class KinesisCallback:
     def __init__(self, kinesis_client, prediction_stream_name):
         self.kinesis_client = kinesis_client
         self.prediction_stream_name = prediction_stream_name
+        logger.info("Initialized KinesisCallback with stream name: %s", prediction_stream_name)
 
     def put_record(self, prediction_event):
-        studemt_id = prediction_event["prediction"]["student_id"]
-
-        self.kinesis_client.put_record(
-            StreamName=self.prediction_stream_name,
-            Data=json.dumps(prediction_event),
-            PartitionKey=str(studemt_id),
-        )
+        student_id = prediction_event["prediction"]["student_id"]
+        logger.info("Adding Kinesis record for student ID: %s", student_id)
+        try:
+            response = self.kinesis_client.put_record(
+                StreamName=self.prediction_stream_name,
+                Data=json.dumps(prediction_event),
+                PartitionKey=str(student_id),
+            )
+            logger.info("Kinesis record added with response: %s", response)
+        except Exception as e:
+            logger.error("Failed to add Kinesis record: %s", e, exc_info=True)
 
 
 def create_kinesis_client():
     endpoint_url = os.getenv("KINESIS_ENDPOINT_URL")
-
     if endpoint_url is None:
+        logger.info("Creating Kinesis client with default endpoint")
         return boto3.client("kinesis")
-
+    logger.info("Creating Kinesis client with custom endpoint: %s", endpoint_url)
     return boto3.client("kinesis", endpoint_url=endpoint_url)
 
 
 def init_model_service(prediction_stream_name: str, run_id: str, test_run: bool):
-
+    logger.info("Initializing model service with run ID: %s", run_id)
     callbacks = []
 
     if not test_run:
+        logger.info("Non-test run detected, setting up Kinesis callback")
         kinesis_client = create_kinesis_client()
         kinesis_callback = KinesisCallback(kinesis_client, prediction_stream_name)
         callbacks.append(kinesis_callback.put_record)
 
     model, scaler = load_models()
+    logger.info("Models loaded successfully")
 
     model_service = ModelService(
         model=model, scaler=scaler, model_version=run_id, callbacks=callbacks
     )
+    logger.info("Model service initialized with version: %s", run_id)
 
     return model_service
