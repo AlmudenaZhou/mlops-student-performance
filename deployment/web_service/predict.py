@@ -1,7 +1,4 @@
 import os
-import sys
-
-sys.path.append(os.getcwd())
 
 from flask import Flask, jsonify, request
 

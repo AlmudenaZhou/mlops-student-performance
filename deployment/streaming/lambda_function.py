@@ -1,7 +1,4 @@
 import os
-import sys
-
-sys.path.append(os.getcwd())
 
 from utils.model_serving import init_model_service
 
