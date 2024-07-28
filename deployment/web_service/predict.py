@@ -4,7 +4,6 @@ from flask import Flask, jsonify, request
 
 from utils import ModelService, load_models
 
-
 TEST_RUN = os.getenv("TEST_RUN", "False") == "True"
 
 if TEST_RUN:

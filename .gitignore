@@ -18,4 +18,3 @@ mlflow.db
 *.csv
 minmax_scaler/
 *.log
-
