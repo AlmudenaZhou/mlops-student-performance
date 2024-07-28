@@ -1,12 +1,12 @@
-import os
 import sys
 from pathlib import Path
 
 import numpy as np
 import pandas as pd
 
-sys.path.append(os.getcwd())
-print(os.getcwd())
+print(Path(__file__).parents[2])
+project_root = Path(__file__).parents[2]
+sys.path.insert(0, str(project_root))
 
 from scripts import model_serving
 
