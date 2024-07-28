@@ -4,11 +4,10 @@ from pathlib import Path
 import numpy as np
 import pandas as pd
 
-print(Path(__file__).parents[2])
 project_root = Path(__file__).parents[2]
 sys.path.insert(0, str(project_root))
 
-from scripts import model_serving
+from utils import model_serving
 
 
 def read_text(file):

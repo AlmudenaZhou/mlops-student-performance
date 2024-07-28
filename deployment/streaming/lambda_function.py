@@ -1,10 +1,9 @@
 import os
 import sys
-import json
 
 sys.path.append(os.getcwd())
 
-from scripts.model_serving import init_model_service
+from utils.model_serving import init_model_service
 
 TEST_RUN = os.getenv("TEST_RUN", "False") == "True"
 
@@ -28,6 +27,6 @@ model_service = init_model_service(
 )
 
 
-def lambda_handler(event, context):
+def lambda_handler(event, _):
 
     model_service.lambda_handler(event)

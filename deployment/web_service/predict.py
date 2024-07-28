@@ -5,10 +5,10 @@ sys.path.append(os.getcwd())
 
 from flask import Flask, jsonify, request
 
-from scripts import ModelService, load_models
+from utils import ModelService, load_models
+
 
 TEST_RUN = os.getenv("TEST_RUN", "False") == "True"
-
 
 if TEST_RUN:
     MLFLOW_TRACKING_URI = os.getenv("MLFLOW_TRACKING_URI", None)
