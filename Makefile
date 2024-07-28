@@ -1,6 +1,8 @@
 include .env
 
 
+PATH_TO_GIT_BASH = C:\Program Files\Git\bin\sh.exe
+
 # Define a default target
 .PHONY: all
 all: quality_checks run_unit_tests run_streaming_lambda
@@ -34,10 +36,6 @@ run_web_test:
 	call .venv/Scripts/activate&& set MLFLOW_TRACKING_URI=&& python ./deployment/web_service/test.py
 	@$(MAKE) clean
 
-.PHONY: run_streaming_lambda
-run_streaming_lambda:
-	set TEST_RUN=True&&set PYTHONPATH=.&& start /B python .\deployment\streaming\lambda_function.py
-
 .PHONY: run_unit_tests
 run_unit_tests:
 	call .venv/Scripts/activate&&set PYTHONPATH=.&&python -m pytest .\tests\unit_tests\
@@ -50,7 +48,7 @@ quality_checks:
 
 .PHONY: run_integration_tests
 run_integration_tests:
-	start "" "C:\Program Files\Git\bin\sh.exe" -c "export $(cat .env | sed 's/\r//g' | xargs) && tests/integration_tests/run.sh"
+	start "" "$(PATH_TO_GIT_BASH)" -c "export $(cat .env | sed 's/\r//g' | xargs) && tests/integration_tests/run.sh"
 
 
 .PHONY: debug_lambda_image
@@ -63,7 +61,7 @@ build_lambda_image:
 
 .PHONY: run_precommit_push
 run_precommit_push:
-	start "" "C:\Program Files\Git\bin\bash.exe" -c "pre-commit run --all-files --hook-stage pre-push > pre-commit.log"
+	start "" "$(PATH_TO_GIT_BASH)" -c "pre-commit run --all-files --hook-stage pre-push > pre-commit.log"
 
 # Clean up background jobs (if needed)
 .PHONY: clean
