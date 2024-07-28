@@ -61,6 +61,10 @@ debug_lambda_image:
 build_lambda_image:
 	docker build -t ${EXPERIMENT_NAME} -f deployment/streaming/Dockerfile .
 
+.PHONY: run_precommit_push
+run_precommit_push:
+	start "" "C:\Program Files\Git\bin\bash.exe" -c "pre-commit run --all-files --hook-stage pre-push > pre-commit.log"
+
 # Clean up background jobs (if needed)
 .PHONY: clean
 clean:
