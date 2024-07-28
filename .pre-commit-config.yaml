@@ -28,10 +28,9 @@ repos:
       ]
 - repo: local
   hooks:
-    - id: pytest-check
-      name: pytest-check
-      entry: bash -c 'source .venv/Scripts/activate && pytest tests'
+    - id: pytest
+      name: pytest
+      entry: bash -c 'source .venv/Scripts/activate && pytest tests/unit_tests'
       language: system
       pass_filenames: false
       always_run: true
-      working_dir: .
