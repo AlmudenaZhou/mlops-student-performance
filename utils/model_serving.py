@@ -10,7 +10,9 @@ import pandas as pd
 from mlflow import MlflowClient
 
 
-logging.basicConfig(level=logging.INFO, format='%(asctime)s - %(levelname)s - %(message)s')
+logging.basicConfig(
+    level=logging.INFO, format='%(asctime)s - %(levelname)s - %(message)s'
+)
 logger = logging.getLogger(__name__)
 logger.setLevel(10)
 
@@ -156,7 +158,9 @@ class KinesisCallback:
     def __init__(self, kinesis_client, prediction_stream_name):
         self.kinesis_client = kinesis_client
         self.prediction_stream_name = prediction_stream_name
-        logger.info("Initialized KinesisCallback with stream name: %s", prediction_stream_name)
+        logger.info(
+            "Initialized KinesisCallback with stream name: %s", prediction_stream_name
+        )
 
     def put_record(self, prediction_event):
         student_id = prediction_event["prediction"]["student_id"]

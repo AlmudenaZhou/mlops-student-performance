@@ -10,22 +10,19 @@ with open("kinesis_event.json", "rt", encoding="utf-8") as f_in:
 
 
 url = "http://localhost:8080/2015-03-31/functions/function/invocations"
-actual_response = requests.post(url, json=event).json()
+actual_response = requests.post(url, json=event, timeout=10).json()
 print("actual response:")
 
 print(json.dumps(actual_response, indent=2))
 
 
 expected_response = {
-
     "predictions": [
         {
-                "model": "student-performance",
-                "version": "Test123",
-                "prediction": {
-                    "GPA": 2.0,
-                    "student_id": 2566.0},
-            }
+            "model": "student-performance",
+            "version": "Test123",
+            "prediction": {"GPA": 2.0, "student_id": 2566.0},
+        }
     ]
 }
 

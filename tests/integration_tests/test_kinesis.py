@@ -42,12 +42,10 @@ pprint(actual_record)
 expected_record = {
     "predictions": [
         {
-                "model": "student-performance",
-                "version": "Test123",
-                "prediction": {
-                    "GPA": 2.0,
-                    "student_id": 2566.0},
-            }
+            "model": "student-performance",
+            "version": "Test123",
+            "prediction": {"GPA": 2.0, "student_id": 2566.0},
+        }
     ]
 }
 
