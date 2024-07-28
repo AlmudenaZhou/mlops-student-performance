@@ -48,6 +48,19 @@ quality_checks:
 	call .venv/Scripts/activate&&black .
 	call .venv/Scripts/activate&&pylint --recursive=y .
 
+.PHONY: run_integration_tests
+run_integration_tests:
+	start "" "C:\Program Files\Git\bin\sh.exe" -c "export $(cat .env | sed 's/\r//g' | xargs) && tests/integration_tests/run.sh"
+
+
+.PHONY: debug_lambda_image
+debug_lambda_image:
+	docker run -it --entrypoint /bin/bash student-performance:2024-07-28-19-33
+
+.PHONY: build_lambda_image
+build_lambda_image:
+	docker build -t ${EXPERIMENT_NAME} -f deployment/streaming/Dockerfile .
+
 # Clean up background jobs (if needed)
 .PHONY: clean
 clean:
