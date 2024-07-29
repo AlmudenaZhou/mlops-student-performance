@@ -63,6 +63,10 @@ build_lambda_image:
 run_precommit_push:
 	start "" "$(PATH_TO_GIT_BASH)" -c "pre-commit run --all-files --hook-stage pre-push > pre-commit.log"
 
+.PHONY: run_monitoring
+run_monitoring:
+	start "" "$(PATH_TO_GIT_BASH)" -c "momitoring/run_locally.sh"
+
 # Clean up background jobs (if needed)
 .PHONY: clean
 clean:

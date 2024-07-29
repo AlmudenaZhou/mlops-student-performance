@@ -192,7 +192,9 @@ def create_kinesis_client():
     return boto3.client("kinesis", endpoint_url=endpoint_url)
 
 
-def init_model_service_with_kinesis(prediction_stream_name: str, run_id: str, test_run: bool):
+def init_model_service_with_kinesis(
+    prediction_stream_name: str, run_id: str, test_run: bool
+):
     logger.info("Initializing model service with run ID: %s", run_id)
     callbacks = []
 

@@ -3,6 +3,9 @@
 dev.env
 mlruns/
 
+data/*
+monitoring/prefect/*
+
 
 # Mage folders
 .file_versions
