@@ -12,6 +12,7 @@ disable = [
     "import-error",
     "duplicate-code",
     "broad-exception-caught",
+    "too-many-arguments"
 ]
 
 [tool.pylint.MASTER]

@@ -66,7 +66,7 @@ def save_predictions(predictions: pd.DataFrame, path: Path) -> None:
     """
 
     # Append data to existing file or, create a new one
-    is_append = True if path.is_file() else False
+    is_append = path.is_file()
     predictions.to_parquet(path, engine="fastparquet", append=is_append)
     print(f"Predictions saved to: {path}")
 
@@ -103,7 +103,7 @@ def predict(ts: pendulum.DateTime, interval: int = 60) -> None:
         print("No data to predict")
 
 
-if __name__ == "__main__":
+def main():
 
     TEST_RUN = os.getenv("TEST_RUN", "False") == "True"
 
@@ -119,3 +119,8 @@ if __name__ == "__main__":
 
     ts = pendulum.parse(args.ts)
     predict(ts=ts, interval=args.interval)
+
+
+if __name__ == "__main__":
+
+    main()

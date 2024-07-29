@@ -78,6 +78,8 @@ def generate_reports(
             Metric pipeline execution timestamp.
     """
 
+    _ =  cat_features
+
     logging.info("Prepare column mapping")
     column_mapping = ColumnMapping()
     column_mapping.numerical_features = num_features
@@ -160,8 +162,7 @@ def monitor_data(ts: pendulum.DateTime, interval: int = 60) -> None:
         )
 
 
-if __name__ == "__main__":
-
+def main():
     args_parser = argparse.ArgumentParser()
     args_parser.add_argument("--ts", dest="ts", required=True)
     args_parser.add_argument("--interval", dest="interval", required=False, default=60)
@@ -169,3 +170,6 @@ if __name__ == "__main__":
 
     ts = pendulum.parse(args.ts)
     monitor_data(ts=ts, interval=args.interval)
+
+if __name__ == "__main__":
+    main()

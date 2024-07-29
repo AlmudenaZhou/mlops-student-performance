@@ -8,12 +8,10 @@ if TEST_RUN:
     load_dotenv()
 
 
-POSTGRES_HOST = os.getenv('POSTGRES_HOST', "localhost")
-POSTGRES_PORT = os.getenv('POSTGRES_PORT', "5432")
-POSTGRES_DB_NAME = os.getenv('POSTGRES_DB_NAME', "monitoring_db")
-POSTGRES_USER = os.getenv('POSTGRES_USER', "admin")
-POSTGRES_PASSWORD = os.getenv('POSTGRES_PASSWORD', "admin")
+host = os.getenv('POSTGRES_HOST', "localhost")
+port = os.getenv('POSTGRES_PORT', "5432")
+db_name = os.getenv('POSTGRES_DB_NAME', "monitoring_db")
+user = os.getenv('POSTGRES_USER', "admin")
+password = os.getenv('POSTGRES_PASSWORD', "admin")
 
-DATABASE_URI: Text = (
-    f"postgresql://{POSTGRES_USER}:{POSTGRES_PASSWORD}@{POSTGRES_HOST}:{POSTGRES_PORT}/{POSTGRES_DB_NAME}"
-)
+DATABASE_URI: Text = (f"postgresql://{user}:{password}@{host}:{port}/{db_name}")
