@@ -1,6 +1,6 @@
 import os
 
-from utils import init_model_service
+from utils import init_model_service_with_kinesis
 
 TEST_RUN = os.getenv("TEST_RUN", "False") == "True"
 
@@ -19,7 +19,7 @@ EXPERIMENT_NAME = os.getenv("EXPERIMENT_NAME")
 
 PREDICTIONS_STREAM_NAME = os.getenv("PREDICTIONS_STREAM_NAME", "student-performance")
 
-model_service = init_model_service(
+model_service = init_model_service_with_kinesis(
     prediction_stream_name=PREDICTIONS_STREAM_NAME, run_id=RUN_ID, test_run=TEST_RUN
 )
 

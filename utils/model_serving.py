@@ -117,11 +117,18 @@ class ModelService:
         logger.info("Prediction result: %f", float(pred[0]))
         return float(pred[0])
 
-    def predict(self, raw_data):
-        logger.info("Starting prediction for raw data: %s", raw_data)
-        df_data = pd.DataFrame([raw_data])
+    def predict(self, raw_record):
+        logger.info("Starting prediction for raw data: %s", raw_record)
+        df_data = pd.DataFrame([raw_record])
         features = self.preprocessing(df_data)
         pred = self.only_predict(features)
+        return pred
+
+    def batch_predict(self, raw_data: pd.DataFrame):
+        logger.info("Starting prediction for raw data. Head: %s", raw_data)
+        features = self.preprocessing(raw_data)
+        pred = self.only_predict(features)
+
         return pred
 
     def lambda_handler(self, event):
@@ -185,7 +192,7 @@ def create_kinesis_client():
     return boto3.client("kinesis", endpoint_url=endpoint_url)
 
 
-def init_model_service(prediction_stream_name: str, run_id: str, test_run: bool):
+def init_model_service_with_kinesis(prediction_stream_name: str, run_id: str, test_run: bool):
     logger.info("Initializing model service with run ID: %s", run_id)
     callbacks = []
 
@@ -195,12 +202,19 @@ def init_model_service(prediction_stream_name: str, run_id: str, test_run: bool)
         kinesis_callback = KinesisCallback(kinesis_client, prediction_stream_name)
         callbacks.append(kinesis_callback.put_record)
 
+    model_service = init_model_service(model_version=run_id, callbacks=callbacks)
+
+    return model_service
+
+
+def init_model_service(model_version=None, callbacks=None):
+
     model, scaler = load_models()
     logger.info("Models loaded successfully")
 
     model_service = ModelService(
-        model=model, scaler=scaler, model_version=run_id, callbacks=callbacks
+        model=model, scaler=scaler, model_version=model_version, callbacks=callbacks
     )
-    logger.info("Model service initialized with version: %s", run_id)
+    logger.info("Model service initialized with version: %s", model_version)
 
     return model_service
