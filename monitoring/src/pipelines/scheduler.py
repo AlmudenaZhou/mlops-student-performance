@@ -67,8 +67,8 @@ if __name__ == "__main__":
 
         load_dotenv()
 
-    START_DATE_TIME = '2024-07-28 09:50:00'
-    END_DATE_TIME = '2024-07-28 15:48:00'
+    START_DATE_TIME = '2024-07-28 13:54:00'
+    END_DATE_TIME = '2024-07-28 19:51:00'
     BATCH_INTERVAL = 15
 
     scheduled_flow(
