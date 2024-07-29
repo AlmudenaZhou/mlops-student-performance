@@ -1,53 +1,4 @@
 {
-  "__inputs": [
-    {
-      "name": "DS_MONITORING_DATABASE",
-      "label": "monitoring database",
-      "description": "",
-      "type": "datasource",
-      "pluginId": "postgres",
-      "pluginName": "PostgreSQL"
-    }
-  ],
-  "__elements": {},
-  "__requires": [
-    {
-      "type": "grafana",
-      "id": "grafana",
-      "name": "Grafana",
-      "version": "9.2.0"
-    },
-    {
-      "type": "datasource",
-      "id": "postgres",
-      "name": "PostgreSQL",
-      "version": "1.0.0"
-    },
-    {
-      "type": "panel",
-      "id": "stat",
-      "name": "Stat",
-      "version": ""
-    },
-    {
-      "type": "panel",
-      "id": "state-timeline",
-      "name": "State timeline",
-      "version": ""
-    },
-    {
-      "type": "panel",
-      "id": "text",
-      "name": "Text",
-      "version": ""
-    },
-    {
-      "type": "panel",
-      "id": "timeseries",
-      "name": "Time series",
-      "version": ""
-    }
-  ],
   "annotations": {
     "list": [
       {
@@ -73,7 +24,7 @@
   "editable": true,
   "fiscalYearStartMonth": 0,
   "graphTooltip": 0,
-  "id": null,
+  "id": 1,
   "links": [],
   "liveNow": false,
   "panels": [
@@ -98,7 +49,7 @@
         "content": "# Evidently Data Drift Monitoring\n\n  Here can be your information about dashboard and its usage.\n",
         "mode": "markdown"
       },
-      "pluginVersion": "9.2.0",
+      "pluginVersion": "9.4.7",
       "targets": [
         {
           "datasource": {
@@ -209,6 +160,10 @@
       },
       "targets": [
         {
+          "datasource": {
+            "type": "postgres",
+            "uid": "monitoringdbuid"
+          },
           "format": "time_series",
           "group": [],
           "instant": false,
@@ -231,11 +186,7 @@
           "table": "data_quality",
           "timeColumn": "\"timestamp\"",
           "timeColumnType": "float8",
-          "where": [],
-          "datasource": {
-            "type": "postgres",
-            "uid": "monitoringdbuid"
-          }
+          "where": []
         }
       ],
       "title": "Dataset Drift",
@@ -322,6 +273,10 @@
       },
       "targets": [
         {
+          "datasource": {
+            "type": "postgres",
+            "uid": "monitoringdbuid"
+          },
           "format": "time_series",
           "group": [],
           "interval": "",
@@ -343,11 +298,7 @@
           "table": "data_quality",
           "timeColumn": "\"timestamp\"",
           "timeColumnType": "float8",
-          "where": [],
-          "datasource": {
-            "type": "postgres",
-            "uid": "monitoringdbuid"
-          }
+          "where": []
         }
       ],
       "title": "Share of drifted features",
@@ -403,9 +354,13 @@
         "text": {},
         "textMode": "auto"
       },
-      "pluginVersion": "9.2.0",
+      "pluginVersion": "9.4.7",
       "targets": [
         {
+          "datasource": {
+            "type": "postgres",
+            "uid": "monitoringdbuid"
+          },
           "format": "table",
           "group": [],
           "hide": false,
@@ -429,11 +384,7 @@
           "table": "data_quality",
           "timeColumn": "\"timestamp\"",
           "timeColumnType": "float8",
-          "where": [],
-          "datasource": {
-            "type": "postgres",
-            "uid": "monitoringdbuid"
-          }
+          "where": []
         }
       ],
       "title": "# of drifted features",
@@ -490,9 +441,13 @@
         "text": {},
         "textMode": "auto"
       },
-      "pluginVersion": "9.2.0",
+      "pluginVersion": "9.4.7",
       "targets": [
         {
+          "datasource": {
+            "type": "postgres",
+            "uid": "monitoringdbuid"
+          },
           "format": "time_series",
           "group": [],
           "hide": false,
@@ -515,11 +470,7 @@
           ],
           "table": "data_quality",
           "timeColumn": "time",
-          "where": [],
-          "datasource": {
-            "type": "postgres",
-            "uid": "monitoringdbuid"
-          }
+          "where": []
         }
       ],
       "title": "# of features",
@@ -528,20 +479,21 @@
     }
   ],
   "refresh": false,
-  "schemaVersion": 37,
+  "revision": 1,
+  "schemaVersion": 38,
   "style": "dark",
   "tags": [],
   "templating": {
     "list": []
   },
   "time": {
-    "from": "now-30m",
-    "to": "now"
+    "from": "2024-07-28T13:54:00.000Z",
+    "to": "2024-07-28T19:39:00.000Z"
   },
   "timepicker": {},
   "timezone": "",
   "title": "Evidently Data Drift Dashboard",
   "uid": "U54hsxv7k",
-  "version": 18,
+  "version": 3,
   "weekStart": ""
 }

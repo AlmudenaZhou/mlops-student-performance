@@ -1,47 +1,4 @@
 {
-  "__inputs": [
-    {
-      "name": "DS_MONITORING_DATABASE",
-      "label": "monitoring database",
-      "description": "",
-      "type": "datasource",
-      "pluginId": "postgres",
-      "pluginName": "PostgreSQL"
-    }
-  ],
-  "__elements": {},
-  "__requires": [
-    {
-      "type": "grafana",
-      "id": "grafana",
-      "name": "Grafana",
-      "version": "9.4.7"
-    },
-    {
-      "type": "datasource",
-      "id": "postgres",
-      "name": "PostgreSQL",
-      "version": "1.0.0"
-    },
-    {
-      "type": "panel",
-      "id": "stat",
-      "name": "Stat",
-      "version": ""
-    },
-    {
-      "type": "panel",
-      "id": "state-timeline",
-      "name": "State timeline",
-      "version": ""
-    },
-    {
-      "type": "panel",
-      "id": "timeseries",
-      "name": "Time series",
-      "version": ""
-    }
-  ],
   "annotations": {
     "list": [
       {
@@ -67,7 +24,7 @@
   "editable": true,
   "fiscalYearStartMonth": 0,
   "graphTooltip": 0,
-  "id": null,
+  "id": 3,
   "links": [],
   "liveNow": false,
   "panels": [
@@ -559,7 +516,7 @@
       "type": "timeseries"
     }
   ],
-  "refresh": "",
+  "refresh": false,
   "revision": 1,
   "schemaVersion": 38,
   "style": "dark",
@@ -568,13 +525,13 @@
     "list": []
   },
   "time": {
-    "from": "2023-04-07T09:39:35.085Z",
-    "to": "2023-04-07T09:45:09.888Z"
+    "from": "2024-07-28T14:09:00.000Z",
+    "to": "2024-07-28T19:24:00.000Z"
   },
   "timepicker": {},
   "timezone": "",
   "title": "Evidently Numerical Target Drift",
   "uid": "lqSup0Y4z",
-  "version": 1,
+  "version": 3,
   "weekStart": ""
 }

@@ -40,8 +40,7 @@
             "mode": "absolute",
             "steps": [
               {
-                "color": "green",
-                "value": null
+                "color": "green"
               },
               {
                 "color": "red",
@@ -118,8 +117,7 @@
             "mode": "absolute",
             "steps": [
               {
-                "color": "green",
-                "value": null
+                "color": "green"
               },
               {
                 "color": "red",
@@ -202,8 +200,7 @@
             "mode": "absolute",
             "steps": [
               {
-                "color": "green",
-                "value": null
+                "color": "green"
               },
               {
                 "color": "red",
@@ -312,8 +309,7 @@
             "mode": "absolute",
             "steps": [
               {
-                "color": "green",
-                "value": null
+                "color": "green"
               },
               {
                 "color": "red",
@@ -424,8 +420,7 @@
             "mode": "absolute",
             "steps": [
               {
-                "color": "green",
-                "value": null
+                "color": "green"
               },
               {
                 "color": "red",
@@ -517,13 +512,13 @@
     "list": []
   },
   "time": {
-    "from": "2023-04-10T10:42:38.203Z",
-    "to": "2023-04-10T10:42:46.819Z"
+    "from": "2024-07-28T13:54:00.000Z",
+    "to": "2024-07-28T19:39:00.000Z"
   },
   "timepicker": {},
   "timezone": "",
   "title": "Evidently Numerical Prediction Drift Dashboard",
   "uid": "OrXim9fVz",
-  "version": 2,
+  "version": 4,
   "weekStart": ""
 }
