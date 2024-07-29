@@ -50,7 +50,6 @@ def extract_batch_data(
     return data
 
 
-
 def prepare_scoring_data(data: pd.DataFrame) -> pd.DataFrame:
     """Prepare scoring data.
 

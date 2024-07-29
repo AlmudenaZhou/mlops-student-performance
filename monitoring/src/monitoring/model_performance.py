@@ -7,6 +7,7 @@ from monitoring.config.db_config import DATABASE_URI
 from sqlalchemy import create_engine
 from monitoring.src.utils.db_utils import add_or_update_by_ts
 from monitoring.src.utils.db_utils import open_sqa_session
+
 # from monitoring.src.utils.models import ModelPerformanceTable
 from monitoring.src.utils.models import TargetDriftTable
 from monitoring.src.utils.type_conv import numpy_to_standard_types
@@ -87,7 +88,9 @@ def commit_model_metrics_to_db(
     model_quality_metric_result: Dict = parse_model_performance_report(
         model_performance_report
     )
-    print("-------------------------------------------------------------------------------------")
+    print(
+        "-------------------------------------------------------------------------------------"
+    )
     print(model_quality_metric_result)
     target_drift_metric_result: Dict = parse_target_drift_report(target_drift_report)
 
@@ -96,7 +99,9 @@ def commit_model_metrics_to_db(
     # )
     # add_or_update_by_ts(session, model_performance)
 
-    print("-------------------------------------------------------------------------------------")
+    print(
+        "-------------------------------------------------------------------------------------"
+    )
     print(timestamp, target_drift_metric_result)
     target_drift = TargetDriftTable(**target_drift_metric_result, timestamp=timestamp)
     add_or_update_by_ts(session, target_drift)

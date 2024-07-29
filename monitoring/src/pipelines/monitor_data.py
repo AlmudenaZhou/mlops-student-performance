@@ -125,7 +125,12 @@ def monitor_data(ts: pendulum.DateTime, interval: int = 60) -> None:
         interval (int, optional): Interval. Defaults to 60.
     """
 
-    num_features = ['ParentalEducation', 'StudyTimeWeekly', 'Absences', 'ParentalSupport']
+    num_features = [
+        'ParentalEducation',
+        'StudyTimeWeekly',
+        'Absences',
+        'ParentalSupport',
+    ]
     cat_features = ['Tutoring', 'Extracurricular', 'Sports', 'Music', 'Volunteering']
     prediction_col = "predictions"
 

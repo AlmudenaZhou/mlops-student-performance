@@ -5,6 +5,7 @@ import os
 TEST_RUN = os.getenv('TEST_RUN', "False") == "True"
 if TEST_RUN:
     from dotenv import load_dotenv
+
     load_dotenv()
 
 

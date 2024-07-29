@@ -91,7 +91,12 @@ def monitor_model(ts: pendulum.DateTime, interval: int = 60) -> None:
 
     DATA_REF_DIR = "data/reference"
     target_col = "GradeClass"
-    num_features = ['ParentalEducation', 'StudyTimeWeekly', 'Absences', 'ParentalSupport']
+    num_features = [
+        'ParentalEducation',
+        'StudyTimeWeekly',
+        'Absences',
+        'ParentalSupport',
+    ]
     cat_features = ['Tutoring', 'Extracurricular', 'Sports', 'Music', 'Volunteering']
     prediction_col = "predictions"
 

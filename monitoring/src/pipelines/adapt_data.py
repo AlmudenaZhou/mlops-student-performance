@@ -38,7 +38,9 @@ def process_parquet_files(data_folder):
         # Save processed files
         filename = x_file.replace("x_", "")
         os.makedirs(os.path.join(data_folder, 'features'), exist_ok=True)
-        df.to_parquet(os.path.join(data_folder, 'features', f'processed_{filename}'), index=False)
+        df.to_parquet(
+            os.path.join(data_folder, 'features', f'processed_{filename}'), index=False
+        )
 
         last_ts = timestamps[0] - timedelta(minutes=1)
 
