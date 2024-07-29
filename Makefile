@@ -67,6 +67,9 @@ run_precommit_push:
 run_monitoring:
 	start "" "$(PATH_TO_GIT_BASH)" -c "momitoring/run_locally.sh"
 
+reset_monitoring:
+	start "" "$(PATH_TO_GIT_BASH)" -c "momitoring/reset.sh"
+
 # Clean up background jobs (if needed)
 .PHONY: clean
 clean:
