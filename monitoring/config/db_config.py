@@ -14,4 +14,4 @@ db_name = os.getenv('POSTGRES_DB_NAME', "monitoring_db")
 user = os.getenv('POSTGRES_USER', "admin")
 password = os.getenv('POSTGRES_PASSWORD', "admin")
 
-DATABASE_URI: Text = (f"postgresql://{user}:{password}@{host}:{port}/{db_name}")
+DATABASE_URI: Text = f"postgresql://{user}:{password}@{host}:{port}/{db_name}"

@@ -105,13 +105,6 @@ def predict(ts: pendulum.DateTime, interval: int = 60) -> None:
 
 def main():
 
-    TEST_RUN = os.getenv("TEST_RUN", "False") == "True"
-
-    if TEST_RUN:
-        from dotenv import load_dotenv
-
-        load_dotenv()
-
     args_parser = argparse.ArgumentParser()
     args_parser.add_argument("--ts", dest="ts", required=True)
     args_parser.add_argument("--interval", dest="interval", required=False, default=60)
@@ -122,5 +115,12 @@ def main():
 
 
 if __name__ == "__main__":
+
+    TEST_RUN = os.getenv("TEST_RUN", "False") == "True"
+
+    if TEST_RUN:
+        from dotenv import load_dotenv
+
+        load_dotenv()
 
     main()
