@@ -1,7 +1,8 @@
-import pandas as pd
-from datetime import datetime, timedelta
 import os
 import uuid
+from datetime import datetime, timedelta
+
+import pandas as pd
 
 
 def process_parquet_files(data_folder):
@@ -17,7 +18,7 @@ def process_parquet_files(data_folder):
 
     last_ts = current_time
 
-    for (x_file, y_file) in file_pairs:
+    for x_file, y_file in file_pairs:
 
         x_df = pd.read_parquet(os.path.join(data_folder, x_file))
         y_df = pd.read_parquet(os.path.join(data_folder, y_file))
@@ -47,6 +48,10 @@ def process_parquet_files(data_folder):
     print("Processing complete. Check the 'data' folder for processed files.")
 
 
-if __name__ == '__main__':
+def main():
     data_folder = 'data'
     process_parquet_files(data_folder)
+
+
+if __name__ == '__main__':
+    main()

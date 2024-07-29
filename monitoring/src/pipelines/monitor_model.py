@@ -1,21 +1,17 @@
-import argparse
 import logging
-from typing import Dict
-from typing import List
-from typing import Text
+import argparse
+from typing import Dict, List, Text
 
 import pandas as pd
 import pendulum
-from prefect import flow
-from prefect import task
-from monitoring.src.monitoring.model_performance import commit_model_metrics_to_db
-from monitoring.src.pipelines.monitor_data import prepare_current_data
-from monitoring.src.utils.utils import get_batch_interval
-
+from prefect import flow, task
 from evidently import ColumnMapping
-from evidently.metrics import ColumnDriftMetric
-from evidently.metrics import RegressionQualityMetric
 from evidently.report import Report
+from evidently.metrics import ColumnDriftMetric, RegressionQualityMetric
+
+from monitoring.src.utils.utils import get_batch_interval
+from monitoring.src.pipelines.monitor_data import prepare_current_data
+from monitoring.src.monitoring.model_performance import commit_model_metrics_to_db
 
 
 @task

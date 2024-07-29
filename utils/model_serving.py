@@ -9,7 +9,6 @@ import mlflow
 import pandas as pd
 from mlflow import MlflowClient
 
-
 logging.basicConfig(
     level=logging.INFO, format='%(asctime)s - %(levelname)s - %(message)s'
 )

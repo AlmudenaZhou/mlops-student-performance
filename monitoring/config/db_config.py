@@ -1,6 +1,5 @@
-from typing import Text
 import os
-
+from typing import Text
 
 TEST_RUN = os.getenv('TEST_RUN', "False") == "True"
 if TEST_RUN:
@@ -15,4 +14,6 @@ POSTGRES_DB_NAME = os.getenv('POSTGRES_DB_NAME', "monitoring_db")
 POSTGRES_USER = os.getenv('POSTGRES_USER', "admin")
 POSTGRES_PASSWORD = os.getenv('POSTGRES_PASSWORD', "admin")
 
-DATABASE_URI: Text = f"postgresql://{POSTGRES_USER}:{POSTGRES_PASSWORD}@{POSTGRES_HOST}:{POSTGRES_PORT}/{POSTGRES_DB_NAME}"
+DATABASE_URI: Text = (
+    f"postgresql://{POSTGRES_USER}:{POSTGRES_PASSWORD}@{POSTGRES_HOST}:{POSTGRES_PORT}/{POSTGRES_DB_NAME}"
+)

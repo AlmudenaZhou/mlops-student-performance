@@ -3,9 +3,8 @@ from pathlib import Path
 
 import pandas as pd
 
-from monitoring.src.utils.utils import prepare_scoring_data
 from utils.model_serving import init_model_service
-
+from monitoring.src.utils.utils import prepare_scoring_data
 
 TEST_RUN = os.getenv("TEST_RUN", "False") == "True"
 

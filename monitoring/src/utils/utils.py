@@ -1,5 +1,4 @@
-from typing import Text
-from typing import Tuple
+from typing import Text, Tuple
 
 import pandas as pd
 import pendulum

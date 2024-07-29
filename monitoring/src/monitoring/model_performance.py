@@ -1,15 +1,13 @@
-from typing import Dict
-from typing import List
-from typing import Text
+from typing import Dict, List, Text
 
 import numpy as np
-from monitoring.config.db_config import DATABASE_URI
 from sqlalchemy import create_engine
-from monitoring.src.utils.db_utils import add_or_update_by_ts
-from monitoring.src.utils.db_utils import open_sqa_session
+
+from monitoring.config.db_config import DATABASE_URI
 
 # from monitoring.src.utils.models import ModelPerformanceTable
 from monitoring.src.utils.models import TargetDriftTable
+from monitoring.src.utils.db_utils import open_sqa_session, add_or_update_by_ts
 from monitoring.src.utils.type_conv import numpy_to_standard_types
 
 

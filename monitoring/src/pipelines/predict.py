@@ -1,17 +1,18 @@
-import argparse
 import os
-from pathlib import Path
+import argparse
 from typing import Text
+from pathlib import Path
 
 import pandas as pd
 import pendulum
-from prefect import flow
-from prefect import task
-from monitoring.src.utils.utils import extract_batch_data
-from monitoring.src.utils.utils import get_batch_interval
-from monitoring.src.utils.utils import prepare_scoring_data
+from prefect import flow, task
 
 from utils.model_serving import init_model_service
+from monitoring.src.utils.utils import (
+    extract_batch_data,
+    get_batch_interval,
+    prepare_scoring_data,
+)
 
 
 @task

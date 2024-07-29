@@ -1,5 +1,6 @@
-from monitoring.config.db_config import DATABASE_URI
 from sqlalchemy import create_engine
+
+from monitoring.config.db_config import DATABASE_URI
 from monitoring.src.utils.models import Base
 
 if __name__ == "__main__":

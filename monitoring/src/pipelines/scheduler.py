@@ -3,9 +3,10 @@ from typing import Text
 
 import pendulum
 from prefect import flow
+
+from monitoring.src.pipelines.predict import predict
 from monitoring.src.pipelines.monitor_data import monitor_data
 from monitoring.src.pipelines.monitor_model import monitor_model
-from monitoring.src.pipelines.predict import predict
 
 
 @flow()

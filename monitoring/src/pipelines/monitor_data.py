@@ -1,22 +1,18 @@
-import argparse
 import logging
+import argparse
+from typing import Dict, List, Text
 from pathlib import Path
-from typing import Dict
-from typing import List
-from typing import Text
 
 import pandas as pd
 import pendulum
-from prefect import flow
-from prefect import task
-from monitoring.src.monitoring.data_quality import commit_data_metrics_to_db
-from monitoring.src.utils.utils import extract_batch_data
-from monitoring.src.utils.utils import get_batch_interval
-
+from prefect import flow, task
 from evidently import ColumnMapping
-from evidently.metric_preset import DataDriftPreset
-from evidently.metrics import DatasetSummaryMetric
 from evidently.report import Report
+from evidently.metrics import DatasetSummaryMetric
+from evidently.metric_preset import DataDriftPreset
+
+from monitoring.src.utils.utils import extract_batch_data, get_batch_interval
+from monitoring.src.monitoring.data_quality import commit_data_metrics_to_db
 
 
 @task
