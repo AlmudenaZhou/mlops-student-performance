@@ -11,9 +11,9 @@ def process_parquet_files(data_folder):
 
     # List of file pairs to process
     file_pairs = [
-        ('x_train.parquet', 'y_train.parquet'),
-        ('x_val.parquet', 'y_val.parquet'),
         ('x_test.parquet', 'y_test.parquet'),
+        ('x_val.parquet', 'y_val.parquet'),
+        ('x_train.parquet', 'y_train.parquet'),
     ]
 
     last_ts = current_time
