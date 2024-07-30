@@ -39,7 +39,6 @@ def calculate_data_drift() -> Tuple[bool, str, bytes]:
         True/False whether alert is detected
     """
 
-
     reference_data, current_data = get_data_for_tests()
 
     data_drift = TestSuite(
