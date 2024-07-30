@@ -73,7 +73,10 @@ python -m venv .venv
 You can also do it through VS Code
 
 
-To activate it and installing dependencies:
+To activate it and add the project path to the PYTHONPATH:
+
+source .venv/Scripts/activate
+echo "export PYTHONPATH=$PWD" >> .venv/Scripts/activate
 ```
 .venv/Scripts/activate
 pip install -r requirements.txt
