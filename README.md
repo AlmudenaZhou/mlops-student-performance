@@ -168,7 +168,32 @@ In both cases, the scaler and model is obtained from the model registry develope
 
 ## Monitoring: Model Maintenance
 
+This module is the base for deploying a monitoring system for data drift in production along with the model, and trigger alerts to retrain the model. To do this: I have used Grafana for the dashboards, Evidently for metrics calculations, Prefect for orchestration and Postgres as database.
 
+This consist in 2 parts:
+- Calculate and store the reference data from the training set. [prepare_reference_data.py](monitoring/src/pipelines/prepare_reference_data.py)
+- Monitoring the incoming batch data:
+    - **Data Pipeline**: compare the input data to the reference data, calculate metrics and plot the report.
+    - **Model Pipeline**: calculate the predictions, compare them to the target, calculate metrics about the comparison and plot the dasboards
+
+
+To perform datetime operations here, I had to implement a data adaptation where I join the x, y and added a synthetic timestamp with a generated uuid for each row.
+
+### Results
+
+This results has been calculated using the validation dataset, using batches of 15min which are composed by 15 records. In the analysis of these dashboards, there are two main things to take into account: there will be a lot of false positives and negatives due to the lack of samples and the model has not been trained thoroughly and consequently, the predictions will not be reliable.
+
+![image](img/dataset_drift.png)
+
+![image](img/prediction_drift.png)
+
+![image](img/target_drift.png)
+
+The features has a big percentage of drifted ones. This can be due to the lack of samples. But if not, it can be beneficial to review it carefully.
+
+As we can see in the panels, the predictions have drifted a lot, while the target drift is not significant.
+
+More details and the How to use: [monitoring README file](monitoring/README.md#code-modules)
 
 ## Infrastructure and Automation: Terraform, Infrastructure as Code
 
