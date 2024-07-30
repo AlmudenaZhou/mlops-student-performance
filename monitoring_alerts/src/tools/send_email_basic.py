@@ -79,5 +79,5 @@ def send_email_basic(
     except ClientError as e:
         print(e.response["Error"]["Message"])
     else:
-        print(f"Email sent to the following recipients: {recipient_list}"),
+        print(f"Email sent to the following recipients: {recipient_list}")
         print(f"Message ID: {response['MessageId']}")

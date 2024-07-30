@@ -1,16 +1,12 @@
 from typing import Tuple
 
 import pandas as pd
-import pandas as pd
 from evidently.test_preset import DataDriftTestPreset
 from evidently.test_suite import TestSuite
+from monitoring_alerts.src.tools.helper_functions import get_evidently_html
 
 
-def calculate_data_drift() -> Tuple[bool, str, bytes]:
-    """
-    Returns:
-        True/False whether alert is detected
-    """
+def get_data_for_tests():
 
     num_features = [
         'ParentalEducation',
@@ -34,6 +30,18 @@ def calculate_data_drift() -> Tuple[bool, str, bytes]:
     current_data = pd.read_parquet(current_data_path)
     current_data = current_data.loc[:, columns] + 3
 
+    return reference_data, current_data
+
+
+def calculate_data_drift() -> Tuple[bool, str, bytes]:
+    """
+    Returns:
+        True/False whether alert is detected
+    """
+
+
+    reference_data, current_data = get_data_for_tests()
+
     data_drift = TestSuite(
         tests=[
             DataDriftTestPreset(),
@@ -41,8 +49,6 @@ def calculate_data_drift() -> Tuple[bool, str, bytes]:
     )
 
     data_drift.run(reference_data=reference_data, current_data=current_data)
-
-    from monitoring_alerts.src.tools.helper_functions import get_evidently_html
 
     html, html_bytes = get_evidently_html(data_drift)
 

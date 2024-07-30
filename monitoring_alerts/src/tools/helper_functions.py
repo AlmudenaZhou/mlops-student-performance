@@ -10,11 +10,14 @@ os.makedirs(project_temp_dir, exist_ok=True)
 os.environ['TMPDIR'] = project_temp_dir
 tempfile.tempdir = project_temp_dir
 
+
 def get_evidently_html(evidently_object) -> Tuple[str, bytes]:
     """Returns the rendered EvidentlyAI report/metric as HTML and binary format"""
     try:
         # Use a more specific filename
-        with tempfile.NamedTemporaryFile(mode='w+', delete=False, suffix='.html', dir=project_temp_dir) as tmp:
+        with tempfile.NamedTemporaryFile(
+            mode='w+', delete=False, suffix='.html', dir=project_temp_dir
+        ) as tmp:
             evidently_object.save_html(tmp.name)
             tmp_path = tmp.name
 
