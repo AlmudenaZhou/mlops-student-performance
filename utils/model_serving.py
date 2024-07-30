@@ -32,7 +32,9 @@ def load_models(need_scaler):
         model = load_binary_file_from_local_path(model_path)
 
         if need_scaler:
-            scaler_path = os.path.join(MODEL_LOCATION, "minmax_scaler", "minmax_scaler.bin")
+            scaler_path = os.path.join(
+                MODEL_LOCATION, "minmax_scaler", "minmax_scaler.bin"
+            )
             scaler = load_binary_file_from_local_path(scaler_path)
 
         return model, scaler
@@ -43,7 +45,9 @@ def load_models(need_scaler):
     model = load_model(artefacts_uri, "mlruns")
 
     if need_scaler:
-        scaler = load_scaler(artefacts_uri, MLFLOW_TRACKING_URI, RUN_ID, ARTIFACT_FOLDER)
+        scaler = load_scaler(
+            artefacts_uri, MLFLOW_TRACKING_URI, RUN_ID, ARTIFACT_FOLDER
+        )
 
     return model, scaler
 
