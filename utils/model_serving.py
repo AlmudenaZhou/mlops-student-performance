@@ -16,7 +16,7 @@ logger = logging.getLogger(__name__)
 logger.setLevel(10)
 
 
-def load_models():
+def load_models(need_scaler):
 
     BUCKET_NAME = os.getenv("BUCKET_NAME")
     RUN_ID = os.getenv("RUN_ID")
@@ -25,12 +25,15 @@ def load_models():
     EXPERIMENT_ID = os.getenv("EXPERIMENT_ID")
     MODEL_LOCATION = os.getenv("MODEL_LOCATION", "")
 
+    scaler = None
+
     if MODEL_LOCATION:
         model_path = os.path.join(MODEL_LOCATION, "mlruns", "model.pkl")
         model = load_binary_file_from_local_path(model_path)
 
-        scaler_path = os.path.join(MODEL_LOCATION, "minmax_scaler", "minmax_scaler.bin")
-        scaler = load_binary_file_from_local_path(scaler_path)
+        if need_scaler:
+            scaler_path = os.path.join(MODEL_LOCATION, "minmax_scaler", "minmax_scaler.bin")
+            scaler = load_binary_file_from_local_path(scaler_path)
 
         return model, scaler
 
@@ -39,7 +42,8 @@ def load_models():
     print(artefacts_uri)
     model = load_model(artefacts_uri, "mlruns")
 
-    scaler = load_scaler(artefacts_uri, MLFLOW_TRACKING_URI, RUN_ID, ARTIFACT_FOLDER)
+    if need_scaler:
+        scaler = load_scaler(artefacts_uri, MLFLOW_TRACKING_URI, RUN_ID, ARTIFACT_FOLDER)
 
     return model, scaler
 
@@ -208,9 +212,9 @@ def init_model_service_with_kinesis(
     return model_service
 
 
-def init_model_service(model_version=None, callbacks=None):
+def init_model_service(model_version=None, callbacks=None, need_scaler=False):
 
-    model, scaler = load_models()
+    model, scaler = load_models(need_scaler)
     logger.info("Models loaded successfully")
 
     model_service = ModelService(
