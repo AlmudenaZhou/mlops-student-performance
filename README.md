@@ -168,7 +168,13 @@ In both cases, the scaler and model is obtained from the model registry develope
 
 ## Monitoring: Model Maintenance
 
-This module is the base for deploying a monitoring system for data drift in production along with the model, and trigger alerts to retrain the model. To do this: I have used Grafana for the dashboards, Evidently for metrics calculations, Prefect for orchestration and Postgres as database.
+This module is the base for deploying a monitoring system for data drift in production along with the model, and trigger alerts to retrain the model.
+
+To do the dashboard monitoring I used Grafana for the dashboards, Evidently for metrics calculations, Prefect for orchestration and Postgres as database.
+
+For the alerts I used Evidently for the triggers and SES to send emails.
+
+### Dashboards
 
 This consist in 2 parts:
 - Calculate and store the reference data from the training set. [prepare_reference_data.py](monitoring/src/pipelines/prepare_reference_data.py)
@@ -179,7 +185,7 @@ This consist in 2 parts:
 
 To perform datetime operations here, I had to implement a data adaptation where I join the x, y and added a synthetic timestamp with a generated uuid for each row.
 
-### Results
+#### Results
 
 This results has been calculated using the validation dataset, using batches of 15min which are composed by 15 records. In the analysis of these dashboards, there are two main things to take into account: there will be a lot of false positives and negatives due to the lack of samples and the model has not been trained thoroughly and consequently, the predictions will not be reliable.
 
@@ -194,6 +200,27 @@ The features has a big percentage of drifted ones. This can be due to the lack o
 As we can see in the panels, the predictions have drifted a lot, while the target drift is not significant.
 
 More details and the How to use: [monitoring README file](monitoring/README.md#code-modules)
+
+
+### Alerts
+
+The alerts are programmed to be a cycle. When new batch of input data arrives, the pipeline is triggered. This new data must be already processed to be compared to the data saved as reference. This comparison is done via Evidently Tests, that can trigger the alerts if drift is detected. The alert calls the SES service to send to a list of recipients an alert of drift.
+
+The initial implementation have static data and uses the same reference data and current data as the previous section. The SES is mocked through localstack and the important variables with sensible information, such as emails, are saved in the .env.
+
+To run this:
+1. Check the .env variables SENDER_EMAIL, RECIPIENT_LIST, PROJECT_NAME and LINK_URL are correctly filled.
+From the monitoring_alerts folder:
+1. `docker-compose up` to deploy the localstack SES
+
+From the project folder:
+1. `make run_monitoring_alert` this will verify as sender the `SENDER_EMAIL`, run the main monitoring alert code and check if the email has been correctly send.
+
+For this demo, I added +3 purposely to the validation data to trigger the drift
+
+Example mail:
+
+![img](img/mail_example.png)
 
 ## Infrastructure and Automation: Terraform, Infrastructure as Code
 

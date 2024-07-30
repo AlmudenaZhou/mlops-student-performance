@@ -70,6 +70,13 @@ run_monitoring:
 reset_monitoring:
 	start "" "$(PATH_TO_GIT_BASH)" -c "momitoring/reset.sh"
 
+verify_email:
+	aws ses verify-email-identity --email-address ${SENDER_EMAIL} --endpoint-url=http://localhost:4566
+
+run_monitoring_alert: verify_email
+	call .venv/Scripts/activate&&set PYTHONPATH=.&&python monitoring_alerts/src/main.py
+	curl --silent localhost.localstack.cloud:4566/_aws/ses?source=MLOps Monitoring Alert ${SENDER_EMAIL}
+
 # Clean up background jobs (if needed)
 .PHONY: clean
 clean:
