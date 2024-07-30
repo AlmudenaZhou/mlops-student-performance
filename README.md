@@ -75,12 +75,25 @@ You can also do it through VS Code
 
 To activate it and add the project path to the PYTHONPATH:
 
+In Linux:
+```
 source .venv/Scripts/activate
 echo "export PYTHONPATH=$PWD" >> .venv/Scripts/activate
-```
-.venv/Scripts/activate
 pip install -r requirements.txt
 ```
+
+In Windows CMD:
+```
+activate.bat
+echo set PYTHONPATH=%CD% >> .venv\Scripts\activate.bat
+```
+
+To install the dependencies:
+```
+pip install -r requirements.txt
+pip install -r monitoring_requirements.txt
+```
+
 
 - I have added an example.env with the environment variable names and a brief explanation. The program is expecting them to be filled in a new file called `.env`.
 
