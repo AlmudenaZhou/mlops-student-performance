@@ -2,7 +2,7 @@ import os
 
 from flask import Flask, jsonify, request
 
-from utils import ModelService, load_models
+from utils.model_serving import init_model_service
 
 TEST_RUN = os.getenv("TEST_RUN", "False") == "True"
 
@@ -20,9 +20,7 @@ if TEST_RUN:
 RUN_ID = os.getenv("RUN_ID")
 EXPERIMENT_NAME = os.getenv("EXPERIMENT_NAME")
 
-model, scaler = load_models()
-print(model, scaler)
-model_service = ModelService(model, scaler)
+model_service = init_model_service(need_scaler=True)
 
 print("model and scaler downloaded")
 app = Flask(EXPERIMENT_NAME)
