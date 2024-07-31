@@ -4,7 +4,7 @@ terraform {
   backend "s3" {
     bucket  = "mlflow-artifact-student-performance"
     key     = "stg-terraform.tfstate"
-    region  = "eu-west-1"
+    region  = "us-east-1"
     encrypt = true
   }
 }
