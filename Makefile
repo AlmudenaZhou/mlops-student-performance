@@ -48,7 +48,7 @@ quality_checks:
 
 .PHONY: run_integration_tests
 run_integration_tests:
-	start "" "$(PATH_TO_GIT_BASH)" -c "export $(cat .env | sed 's/\r//g' | xargs) && tests/integration_tests/run.sh"
+	call .venv/Scripts/activate&&start "" "$(PATH_TO_GIT_BASH)" -c "export $(cat .env | sed 's/\r//g' | xargs) && tests/integration_tests/run.sh"
 
 
 .PHONY: debug_lambda_image

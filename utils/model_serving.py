@@ -211,7 +211,9 @@ def init_model_service_with_kinesis(
         kinesis_callback = KinesisCallback(kinesis_client, prediction_stream_name)
         callbacks.append(kinesis_callback.put_record)
 
-    model_service = init_model_service(model_version=run_id, callbacks=callbacks, need_scaler=True)
+    model_service = init_model_service(
+        model_version=run_id, callbacks=callbacks, need_scaler=True
+    )
 
     return model_service
 
