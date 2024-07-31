@@ -7,6 +7,14 @@ on:
     branches:
       - 'develop'
       - 'main'
+    paths:
+      - 'deployment/streaming/**'
+      - 'infrastructure/**'
+      - 'utils/**'
+      - 'tests/**'
+      - '.github/workflows/**'
+      - 'requirements.txt'
+
 
 env:
   AWS_DEFAULT_REGION: 'eu-west-1'

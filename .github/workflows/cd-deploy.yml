@@ -1,8 +1,19 @@
 name: CD-Deploy
 on:
+  pull_request:
+    branches:
+      - 'main'
   push:
     branches:
       - 'main'
+      - 'develop'
+    paths:
+      - 'deployment/streaming/**'
+      - 'infrastructure/**'
+      - 'utils/**'
+      - 'tests/**'
+      - '.github/workflows/**'
+      - 'requirements.txt'
 
 jobs:
   build-push-deploy:
