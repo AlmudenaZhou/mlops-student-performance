@@ -9,6 +9,9 @@ resource "aws_ecr_repository" "repo" {
   force_delete = true
 }
 
+
+# Replace this block with the commented below to run this on Windows machine
+
 resource "null_resource" "ecr_image" {
    triggers = {
      python_file = md5(file(var.lambda_function_local_path))
@@ -16,20 +19,36 @@ resource "null_resource" "ecr_image" {
    }
 
    provisioner "local-exec" {
-     command = <<EOT
-             echo "Starting ECR login process"
+     command = <<EOF
              aws ecr get-login-password --region ${var.region} | docker login --username AWS --password-stdin ${var.account_id}.dkr.ecr.${var.region}.amazonaws.com
-             echo "Logged in to ECR"
-             cd ..
-             docker build -t ${aws_ecr_repository.repo.repository_url}:${var.ecr_image_tag} -f deployment/streaming/Dockerfile .
-             echo "Docker build completed"
+             cd ../
+             docker build -t ${aws_ecr_repository.repo.repository_url}:${var.ecr_image_tag} .
              docker push ${aws_ecr_repository.repo.repository_url}:${var.ecr_image_tag}
-             echo "Docker push completed"
-             echo "Sleep completed, proceeding with Terraform"
-         EOT
-    interpreter = ["PowerShell", "-Command"]
+         EOF
    }
 }
+
+# resource "null_resource" "ecr_image" {
+#    triggers = {
+#      python_file = md5(file(var.lambda_function_local_path))
+#      docker_file = md5(file(var.docker_image_local_path))
+#    }
+
+#    provisioner "local-exec" {
+#      command = <<EOT
+#              echo "Starting ECR login process"
+#              aws ecr get-login-password --region ${var.region} | docker login --username AWS --password-stdin ${var.account_id}.dkr.ecr.${var.region}.amazonaws.com
+#              echo "Logged in to ECR"
+#              cd ..
+#              docker build -t ${aws_ecr_repository.repo.repository_url}:${var.ecr_image_tag} -f deployment/streaming/Dockerfile .
+#              echo "Docker build completed"
+#              docker push ${aws_ecr_repository.repo.repository_url}:${var.ecr_image_tag}
+#              echo "Docker push completed"
+#              echo "Sleep completed, proceeding with Terraform"
+#          EOT
+#     interpreter = ["PowerShell", "-Command"]
+#    }
+# }
 
 data "aws_ecr_image" "lambda_image" {
   depends_on = [
