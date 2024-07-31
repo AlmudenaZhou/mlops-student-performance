@@ -59,6 +59,6 @@ jobs:
 
       - name: TF plan
         id: plan
-        working-directory: '06-best-practices/code/infrastructure'
+        working-directory: 'infrastructure'
         run: |
           terraform init -backend-config="key=prod-terraform.tfstate" --reconfigure && terraform plan --var-file vars/prod.tfvars
