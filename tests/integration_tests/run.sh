@@ -15,7 +15,8 @@ else
     echo "no need to build image ${LOCAL_IMAGE_NAME}"
 fi
 
-cd $(dirname $0)
+cd "tests/integration_tests/"
+echo "Changed to integration_tests folde"
 
 docker-compose up -d
 
