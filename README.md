@@ -244,7 +244,7 @@ The infrastructure is composed by 4 modules:
 1. You need to comment from [main.tf](infrastructure/main.tf) the first block: `terraform`, as you don't have any .tfstate generated yet.
 1. Run `terraform init`, `terraform plan -var-file=vars/{config_name}.tfvars` and `terraform apply -var-file=vars/{config_name}.tfvars` where config_name is stg or prod.
 
-    This should print on you terminal:
+    This should print on your terminal (the names will depend on your names at the .tfvars):
 
     ![img](img/terraform_apply_output.png)
 
