@@ -18,16 +18,18 @@ fi
 cd "tests/integration_tests/"
 echo "Changed to integration_tests folde"
 
-docker-compose up -d
+export PREDICTIONS_STREAM_NAME="student-performance"
+export AWS_DEFAULT_REGION="eu-west-1"
 
+docker-compose up -d
 sleep 5
 
 aws --endpoint-url=http://localhost:4566 \
     kinesis create-stream \
-    --stream-name ${INPUT_STREAM_NAME} \
+    --stream-name ${PREDICTIONS_STREAM_NAME} \
     --shard-count 1
 
-python test_docker.py
+pipenv run python test_docker.py
 
 ERROR_CODE=$?
 
@@ -38,7 +40,7 @@ if [ ${ERROR_CODE} != 0 ]; then
 fi
 
 
-python test_kinesis.py
+pipenv run python test_kinesis.py
 
 ERROR_CODE=$?
 
@@ -49,4 +51,4 @@ if [ ${ERROR_CODE} != 0 ]; then
 fi
 
 
-docker-compose down
+pipenv run docker-compose down

@@ -24,7 +24,7 @@ jobs:
           python-version: 3.9
 
       - name: Install dependencies
-        run: pip install pipenv && pipenv install --dev
+        run: pip install pipenv && pipenv install -r ./requirements.txt
 
       - name: Run Unit tests
         run: pipenv run pytest tests/unit_tests/
