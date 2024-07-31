@@ -16,8 +16,6 @@ else
     echo "no need to build image ${LOCAL_IMAGE_NAME}"
 fi
 
-source .venv/Scripts/activate
-
 cd $(dirname $0)
 
 docker-compose up -d
