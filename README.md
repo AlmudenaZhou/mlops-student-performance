@@ -344,7 +344,50 @@ For running this in Windows:
 
 ## CI/CD pipeline
 
+To complete this project, the CI/CD pipeline integrates the [infrastructure](#infrastructure-and-automation-terraform-infrastructure-as-code) and [good practices](#good-practices) sections, streamlining the deployment of new features.
 
+This pipeline is designed for a typical workflow where direct pushes to the main branch are not allowed. While it assumes direct pushes to the develop branch are possible, it is generally better to push to a feature branch first and then create a pull request to develop.
+
+The pipeline consists of two parts:
+
+- **CI Pipeline**: Runs on pushes to the develop branch to ensure everything is functioning correctly.
+- **CD Pipeline**: Runs on pull requests to the main branch and deploys changes directly.
+Both pipelines are triggered only if files affecting any phase of the pipeline are changed or created. This is managed by specifying paths that need monitoring.
+
+CI/CD pipelines work together, as a reliable CI pipeline is essential for confidently deploying changes to production.
+
+### CI Pipeline
+The CI pipeline ensures the system operates correctly when new features are added. It tests all code through unit and integration tests, and verifies the Terraform infrastructure by running terraform plan with production variables and the production backend state.
+
+This pipeline is triggered by pull requests to the main branch or pushes to the develop branch, as these actions are critical for monitoring in this workflow.
+
+To view the code, see the [CI pipeline configuration](.github/workflows/ci-tests.yml).
+
+### CD Pipeline
+The CD pipeline enables seamless integration of new changes into the production system. It runs the terraform apply steps in production, saves the Lambda image in the ECR, and updates the Lambda function.
+
+This pipeline is triggered only when a pull request to the main branch is accepted, as this is the appropriate moment to deploy the previously implemented changes to production.
+
+To view the code, see the [CD pipeline configuration](.github/workflows/cd-deploy.yml).
+
+### How to Use
+
+The pipelines are triggered automatically based on the actions mentioned above. Before utilizing the pipelines, please follow these steps:
+
+1. **Add AWS Credentials**:
+   - In the repository's secrets configuration section, add `AWS_ACCESS_KEY_ID` and `AWS_SECRET_ACCESS_KEY`.
+
+2. **Test Workflows without Pull Requests**:
+   - If you want to test the workflows without making pull requests, temporarily modify the configuration file as follows:
+
+    ```yaml
+    on:
+      push:
+        branches:
+          - 'main'  # Replace with the name of your branch
+    ```
+
+This modification allows the workflows to be triggered on pushes to the specified branch, facilitating easier testing.
 
 ## Future steps
 - Migrate Training Pipeline to cloud
