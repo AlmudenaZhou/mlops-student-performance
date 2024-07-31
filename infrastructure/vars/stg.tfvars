@@ -1,0 +1,7 @@
+source_stream_name = "stg_student_events"
+output_stream_name = "stg_student_predictions"
+model_bucket = "stg-mlflow-artifact"
+lambda_function_local_path = "../deployment/streaming/lambda_function.py"
+docker_image_local_path = "../deployment/streaming/Dockerfile"
+ecr_repo_name = "stg_lambda_image"
+lambda_function_name = "stg_prediction_lambda"

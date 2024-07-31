@@ -1,0 +1,7 @@
+source_stream_name = "prod_student_events"
+output_stream_name = "prod_student_predictions"
+model_bucket = "prod-mlflow-artifact"
+lambda_function_local_path = "../deployment/streaming/lambda_function.py"
+docker_image_local_path = "../deployment/streaming/Dockerfile"
+ecr_repo_name = "prod_lambda_image"
+lambda_function_name = "prod_prediction_lambda"
