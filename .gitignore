@@ -22,3 +22,8 @@ mlflow.db
 *.csv
 minmax_scaler/
 *.log
+
+
+.terraform
+.terraform.lock.hcl
+*.tfstate*
