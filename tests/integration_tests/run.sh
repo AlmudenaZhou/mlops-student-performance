@@ -35,7 +35,7 @@ echo "Kinesis Stream created"
 
 echo "Start running test_docker.py"
 
-pipenv run python test_docker.py
+python test_docker.py
 
 ERROR_CODE=$?
 
@@ -46,7 +46,7 @@ if [ ${ERROR_CODE} != 0 ]; then
 fi
 
 echo "Start running test_kinesis.py"
-pipenv run python test_kinesis.py
+python test_kinesis.py
 
 ERROR_CODE=$?
 
@@ -57,4 +57,4 @@ if [ ${ERROR_CODE} != 0 ]; then
 fi
 
 
-pipenv run docker-compose down
+docker-compose down
