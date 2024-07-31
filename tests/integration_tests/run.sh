@@ -22,12 +22,18 @@ export PREDICTIONS_STREAM_NAME="student-performance"
 export AWS_DEFAULT_REGION="eu-west-1"
 
 docker-compose up -d
+
+echo "finished docker-compose up"
 sleep 5
 
 aws --endpoint-url=http://localhost:4566 \
     kinesis create-stream \
     --stream-name ${PREDICTIONS_STREAM_NAME} \
     --shard-count 1
+
+echo "Kinesis Stream created"
+
+echo "Start running test_docker.py"
 
 pipenv run python test_docker.py
 
@@ -39,7 +45,7 @@ if [ ${ERROR_CODE} != 0 ]; then
     exit ${ERROR_CODE}
 fi
 
-
+echo "Start running test_kinesis.py"
 pipenv run python test_kinesis.py
 
 ERROR_CODE=$?
