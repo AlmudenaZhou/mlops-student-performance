@@ -11,14 +11,14 @@
 - [Inference Pipeline: Model Serving](#inference-pipeline-model-serving)
 - [Monitoring: Model Maintenance](#monitoring-model-maintenance)
 - [Infrastructure and Automation: Terraform, Infrastructure as Code](#infrastructure-and-automation-terraform-infrastructure-as-code)
-- [CI/CD Workflows](#cicd-workflows)
+- [Good Practices](#good-practices)
     - [Linter and Code Formatters](#linter-and-code-formatters)
     - [Makefile](#makefile)
     - [Precommit hooks](#precommit-hooks)
     - [Tests](#tests)
         - [Unit tests](#unit-tests)
         - [Integration tests](#integration-tests)
-    - [CI/CD pipeline](#cicd-pipeline)
+- [CI/CD pipeline](#cicd-pipeline)
 - [Future steps](#future-steps)
 
 
@@ -255,7 +255,7 @@ The infrastructure is composed by 4 modules:
 1. Test the new configuration running again the third step.
 
 
-## CI/CD Workflows
+## Good Practices
 
 ### Linter and Code Formatters
 
@@ -342,10 +342,15 @@ Notes: special attention about the location of the files. The project is used fo
 For running this in Windows:
 `make run_integration_tests`
 
-### CI/CD pipeline
+## CI/CD pipeline
+
+
 
 ## Future steps
 - Migrate Training Pipeline to cloud
 - Deployment of the web service
-- Added to the firts event streaming the web service?
-- Automatize the training when the data drifs surpasses a treshold
+- Added to the firts event streaming the web service
+- Automatize the training when the data drifs surpasses a treshold, instead of only alert
+- Deploy the monitoring module
+- Finish dynamic data ingestion in the monitoring module
+- Finish complete integration between dashboard monitoring and alerts
