@@ -8,8 +8,7 @@ fi
 cd "../.."
 
 if [ "${LOCAL_IMAGE_NAME}" == "" ]; then
-    LOCAL_TAG=`date +"%Y-%m-%d-%H-%M"`
-    export LOCAL_IMAGE_NAME="${EXPERIMENT_NAME}:${LOCAL_TAG}"
+    export LOCAL_IMAGE_NAME="student-performance"
     echo "LOCAL_IMAGE_NAME is not set, building a new image with tag ${LOCAL_IMAGE_NAME}"
     docker build -t ${LOCAL_IMAGE_NAME} -f deployment/streaming/Dockerfile .
 else
