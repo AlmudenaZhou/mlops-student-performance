@@ -1,12 +1,6 @@
 import os
-import glob
 
 from utils.model_serving import init_model_service_with_kinesis
-
-root_dir = os.path.dirname(os.path.realpath(__file__))
-# root_dir needs a trailing slash (i.e. /root/dir/)
-for filename in glob.iglob(root_dir + '**/**', recursive=True):
-    print(filename)
 
 TEST_RUN = os.getenv("TEST_RUN", "False") == "True"
 
