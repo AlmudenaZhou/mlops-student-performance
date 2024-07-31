@@ -11,7 +11,7 @@
 - [Inference Pipeline: Model Serving](#inference-pipeline-model-serving)
 - [Monitoring: Model Maintenance](#monitoring-model-maintenance)
 - [Infrastructure and Automation: Terraform, Infrastructure as Code](#infrastructure-and-automation-terraform-infrastructure-as-code)
-- [Good Practices](#good-practices)
+- [Development Practices](#development-practices)
     - [Linter and Code Formatters](#linter-and-code-formatters)
     - [Makefile](#makefile)
     - [Precommit hooks](#precommit-hooks)
@@ -195,59 +195,82 @@ In both the Web Service and Streaming methods, the scaler and model are retrieve
 
 ## Monitoring: Model Maintenance
 
-This module is the base for deploying a monitoring system for data drift in production along with the model, and trigger alerts to retrain the model.
+This module provides a comprehensive system for monitoring data drift in production and triggering alerts to retrain the model when necessary. It integrates various tools to ensure effective tracking and response to changes in data patterns and model performance.
 
-To do the dashboard monitoring I used Grafana for the dashboards, Evidently for metrics calculations, Prefect for orchestration and Postgres as database.
+### Overview
 
-For the alerts I used Evidently for the triggers and SES to send emails.
+The monitoring system consists of several components:
+
+- **Grafana**: For creating and displaying dashboards.
+- **Evidently**: For calculating metrics and triggering alerts.
+- **Prefect**: For orchestrating workflows.
+- **Postgres**: For storing data.
+
+For alerts, **Evidently** handles drift detection, while **SES** (Simple Email Service) is used for sending notifications.
 
 ### Dashboards
 
-This consist in 2 parts:
-- Calculate and store the reference data from the training set. [prepare_reference_data.py](monitoring/src/pipelines/prepare_reference_data.py)
-- Monitoring the incoming batch data:
-    - **Data Pipeline**: compare the input data to the reference data, calculate metrics and plot the report.
-    - **Model Pipeline**: calculate the predictions, compare them to the target, calculate metrics about the comparison and plot the dasboards
+The dashboard monitoring process is divided into two main parts:
 
+1. **Reference Data Preparation:**
+   - Calculates and stores reference data from the training set.
+   - Implemented in [prepare_reference_data.py](monitoring/src/pipelines/prepare_reference_data.py).
 
-To perform datetime operations here, I had to implement a data adaptation where I join the x, y and added a synthetic timestamp with a generated uuid for each row.
+2. **Monitoring Incoming Data:**
+   - **Data Pipeline**: Compares incoming batch data with the reference data, calculates metrics, and generates reports.
+   - **Model Pipeline**: Calculates predictions, compares them with targets, calculates performance metrics, and updates dashboards.
+
+To manage datetime operations, data adaptation includes joining `x` and `y` with a synthetic timestamp and a UUID for each row.
 
 #### Results
 
-This results has been calculated using the validation dataset, using batches of 15min which are composed by 15 records. In the analysis of these dashboards, there are two main things to take into account: there will be a lot of false positives and negatives due to the lack of samples and the model has not been trained thoroughly and consequently, the predictions will not be reliable.
+Metrics and visualizations are based on the validation dataset, analyzed in 15-minute batches, each consisting of 15 records. Key points to note:
 
-![image](img/dataset_drift.png)
+- **False Positives/Negatives**: High due to limited sample sizes and incomplete model training.
+- **Prediction Drift**: Significant changes observed, while target drift remains minimal.
 
-![image](img/prediction_drift.png)
+Refer to the images below for visual insights:
 
-![image](img/target_drift.png)
+![Dataset Drift](img/dataset_drift.png)
+![Prediction Drift](img/prediction_drift.png)
+![Target Drift](img/target_drift.png)
 
-The features has a big percentage of drifted ones. This can be due to the lack of samples. But if not, it can be beneficial to review it carefully.
+The high percentage of drifted features might indicate a need for further investigation, especially if the drift is not sample-related.
 
-As we can see in the panels, the predictions have drifted a lot, while the target drift is not significant.
-
-More details and the How to use: [monitoring README file](monitoring/README.md#code-modules)
-
+For detailed instructions and additional usage information, please refer to the [monitoring README file](monitoring/README.md#code-modules).
 
 ### Alerts
 
-The alerts are programmed to be a cycle. When new batch of input data arrives, the pipeline is triggered. This new data must be already processed to be compared to the data saved as reference. This comparison is done via Evidently Tests, that can trigger the alerts if drift is detected. The alert calls the SES service to send to a list of recipients an alert of drift.
+Alerts are designed to trigger in response to detected data drift. The process includes:
 
-The initial implementation have static data and uses the same reference data and current data as the previous section. The SES is mocked through localstack and the important variables with sensible information, such as emails, are saved in the .env.
+1. **Data Arrival**: A new batch of input data triggers the pipeline.
+2. **Data Comparison**: The new data is compared with the reference data using Evidently Tests.
+3. **Drift Detection**: If drift is detected, an alert is triggered.
+4. **Notification**: SES sends an email alert to the specified recipients.
 
-#### How to use it
-1. Check the .env variables SENDER_EMAIL, RECIPIENT_LIST, PROJECT_NAME and LINK_URL are correctly filled.
-From the monitoring_alerts folder:
-1. `docker-compose up` to deploy the localstack SES
+The initial implementation uses static data, with the same reference and current data as described in the previous section. SES is mocked through LocalStack, and sensitive information such as email addresses is stored in the `.env` file.
 
-From the project folder:
-1. `make run_monitoring_alert` this will verify as sender the `SENDER_EMAIL`, run the main monitoring alert code and check if the email has been correctly send.
+#### How to Use
 
-For this demo, I added +3 purposely to the validation data to trigger the drift
+1. Ensure that the `.env` file contains correctly configured variables: `SENDER_EMAIL`, `RECIPIENT_LIST`, `PROJECT_NAME`, and `LINK_URL`.
+2. Navigate to the `monitoring_alerts` folder and run:
+   ```bash
+   docker-compose up
+   ```
 
-Example mail:
+   to deploy LocalStack SES.
 
-![img](img/mail_example.png)
+3. From the project folder, execute:
+   ```bash
+   make run_monitoring_alert
+   ```
+   This command verifies the sender (SENDER_EMAIL), runs the monitoring alert code, and checks if the email alert is successfully sent.
+
+For demonstration purposes, the validation data is intentionally modified to trigger drift.
+
+Example of an alert email:
+
+![Email alert](img/mail_example.png)
 
 ## Infrastructure and Automation: Terraform, Infrastructure as Code
 
@@ -283,104 +306,215 @@ The infrastructure is composed by 4 modules:
 1. Uncomment the terraform block from [main.tf](infrastructure/main.tf) and change the bucket, key and region to match your bucket.
 1. Test the new configuration running again the third step.
 
+## Infrastructure as Code with Terraform
 
-## Good Practices
+This project uses Terraform to manage and automate infrastructure deployment. This approach ensures consistency across environments and simplifies resource management.
 
-### Linter and Code Formatters
+### Environment Configurations
 
-I used isort and black as code formatters for a first automatic changes in ordered imports and standard clean code, respectively, and pylint as the linter for ensuring gold standard code.
+I maintain two primary environments:
 
-They are triggered running in the terminal:
-```
+- **Stage**: For testing changes before production deployment
+- **Production**: For the live product
+
+This separation allows for safe testing and validation before affecting the production environment. For larger projects, consider adding additional environments like `local` and `dev`.
+
+### Terraform Modules
+
+The infrastructure is composed of four main modules:
+
+1. **ECR**: Manages the Elastic Container Registry for storing Lambda function images.
+2. **Kinesis**: Sets up two Kinesis streams for input and output data processing.
+3. **Lambda**: Configures the Lambda function, including IAM roles and Kinesis trigger.
+4. **S3**: Creates a bucket for storing MLflow artifacts.
+
+### Deployment Instructions
+
+1. **Verify AWS Credentials**: Ensure your AWS credentials are correctly configured.
+
+2. **Initial Setup**:
+   - Comment out the `terraform` block in `infrastructure/main.tf`.
+   - Run the following commands:
+     ```
+     terraform init
+     terraform plan -var-file=vars/<config_name>.tfvars
+     terraform apply -var-file=vars/<config_name>.tfvars
+     ```
+   Replace `<config_name>` with either `stg` or `prod`.
+
+   Output:
+
+   ![img](img/terraform_apply_output.png)
+
+3. **State Management**:
+   - Create an S3 bucket for storing Terraform state.
+   - Upload the generated `terraform.tfstate` to this bucket, renaming it to `<config_name>-terraform.tfstate`.
+
+4. **Update Terraform Configuration**:
+   - Uncomment the `terraform` block in `infrastructure/main.tf`.
+   - Update the `bucket`, `key`, and `region` to match your S3 bucket details.
+
+5. **Verify Configuration**:
+   - Re-run the Terraform commands from step 2 to ensure everything is configured correctly.
+
+### Notes
+
+- The ECR module's `main.tf` contains image build code optimized for Linux. For Windows systems, use the commented code provided in the file.
+- Always review the planned changes before applying them, especially in the production environment.
+- Consider implementing additional safeguards and approval processes for production deployments as your project scales.
+
+
+## Development Practices
+
+This section outlines the development practices and tools used in this MLOps project to ensure code quality, consistency, and ease of use.
+
+### Code Quality Tools
+
+I use the following tools to maintain code quality and consistency:
+
+- **isort**: Automatically sorts and formats import statements.
+- **black**: Provides opinionated code formatting to ensure a consistent style across the project.
+- **pylint**: A static code analysis tool that checks for errors and enforces a coding standard.
+
+To run these tools, activate your virtual environment and execute the following commands:
+```bash
 isort .
 black .
 pylint --recursive=y .
 ```
-
-This must be done after having created and activated the environment
+It's recommended to run these tools before committing changes to ensure code quality and consistency.
 
 ### Makefile
+While Makefiles are traditionally used for compiled languages, I utilize one in this Python-based MLOps project to centralize and simplify common commands, particularly for the inference pipeline.
 
-The makefile usually is used for compiled languages to avoid memorizing large commands and connect the file to compile to the file generated. Make compares automatically if the dependencies has a date later in time than the generated file, and if so it will run the query again.
+This Makefile is designed to work in the Windows Command Prompt. Before using it, ensure that:
 
-This project is done based on python. Therefore, that functionality is not needed. However, trying to run all the queries, particularly in windows, I realized that I had to memorize a lot of commands and it would be easier to have all the commads centralized.
+1. Your virtual environment is correctly set up and activated.
+2. The PATH_TO_GIT_BASH variable at the beginning of the Makefile is set to your Git Bash installation path.
 
-**The Makefile only stores the commands for the inference pipeline and is written to be run in Command Window in Windows**.
+The Makefile contains commands for various MLOps tasks, including:
 
-For using it, ensure that you have the venv correctly set and that the PATH_TO_GIT_BASH variable at the beginning of the Makefile is the same as yours.
+- Data preprocessing
+- Model training
+- Model evaluation
+- Inference pipeline execution
+- Monitoring
+- Development practices
 
-[Makefile](Makefile)
+To use the Makefile, simply run:
 
-### Precommit hooks
-
-The pre-commit hooks will be used to ensure the quality of the code before the code is pushed to the repository. This can also be done through github actions, but I de[cided to use] the pre-commit hooks here to test it easier before pushing it.
-
-By default, the pre-commit install downloads only the precommit hook, place in .git/hooks/pre-commit. However, since I am running the tests and pylint here, I de[cided to use] only the hook-type pre-push for the majority of the implemented hooks due to the large execution time.
-
-#### Steps
-
-1. Adds the pre-commit and pre-push needed to the .git local folder
+```bash
+make <target>
 ```
+
+Where <target> is the specific command you want to execute.
+For a complete list of available commands, refer to the Makefile in the project root.
+
+### Pre-commit Hooks
+I use pre-commit hooks to ensure code quality before pushing changes to the repository. While similar checks can be implemented using GitHub Actions, I've chosen to use pre-commit hooks for easier local testing before pushing code.
+Most of the hooks are configured to run at the pre-push stage due to their execution time, with only essential checks running at the pre-commit stage.
+
+#### Setup
+
+1. Install the pre-commit and pre-push hooks:
+```bash
 pre-commit install --hook-type pre-commit --hook-type pre-push
 ```
-2. For testing:
-```
+
+2. To manually run all pre-push hooks:
+
+```bash
 pre-commit run --all-files --hook-stage pre-push
 ```
-Note: In Windows the pytest hook throws an error if `bash` is not recognized as a command in the terminal. To avoid this, I implemented:
-`make run_precommit_push`
+Note: On Windows, if you encounter issues with the pytest hook not recognizing bash, use the custom Make command:
+```bash
+make run_precommit_push
+```
 
-### Tests
 
-#### Unit tests
+#### Configured Hooks
+The .pre-commit-config.yaml file includes the following hooks:
 
-This module is intended to ensure the correct functionality of the [model_serving module](utils/model_serving.py). Specifically the ModelServing class. [test_model.py](tests/unit_tests/test_model.py)
+- Code formatting (black, isort)
+- Linting (pylint)
+- Static type checking (mypy)
+- Unit tests (pytest)
 
-For accomplish this I implemented several tests:
-- test_base64_decode: test the decode, as kinesis encodes the input data
-- test_preprocessing: mocking the scaler, I test if the ModelService returns the expected output.
-- test_predict: mocking the model, it tests if the predict method works correctly
-- test_lambda_handler: tests the lambda handler, mocking the scaler and the model and running all the workflow.
+Refer to the .pre-commit-config.yaml file for the complete configuration.
 
-This can be run using:
 
-Windows:
-`make run_unit_tests`
+## Testing
+This project maintains a comprehensive test suite to ensure the reliability and correctness of the MLOps pipeline.
 
-`(export PYTHONPATH=.&&python -m pytest .\tests\unit_tests\)`
-It's important to add the project path to the PYTHONPATH due to the folder distribution.
+### Unit Tests
+The unit tests focus on ensuring the correct functionality of the ModelServing class in the model_serving module.
 
-#### Integration tests
+Key test cases in `test_model.py` include:
 
-The system receives the input data from kinesis, pass it to a lambda function, and this lambda returns the prediction to another kinesis stream. This connections between services needs to be tested, and that's what we are going to do here.
+- **test_base64_decode**: Verifies correct decoding of Kinesis-encoded input data
+- **test_preprocessing**: Tests the preprocessing step using a mocked scaler
+- **test_predict**: Validates the prediction method using a mocked model
+- **test_lambda_handler**: Ensures the entire Lambda handler workflow functions correctly with mocked components
 
-This part is divided in two:
-- [test_docker](tests/integration_tests/test_docker.py): tests the lambda deployed in the container. It posts the [kinesis_event](tests/integration_tests/kinesis_event.json) to the input stream in kinesis, run the lambda and wait for the response.
-- [test_kinesis](tests/integration_tests/test_kinesis.py): after running the lambda, test if the kinesis stream received the prediction event
+To run unit tests:
 
-For testing this seamlessly, I developed a shell script: [run.sh](tests/integration_tests/run.sh). This runs the following workflow:
+- On Windows:
+```bash
+make run_unit_tests
+```
+Or manually:
+```bash
+export PYTHONPATH=. && python -m pytest .\tests\unit_tests\
+```
+Note: Setting PYTHONPATH is crucial due to the project's folder structure.
 
-1. If no LOCAL_IMAGE is passed, it builds the Dockerfile from deployment/streaming
-1. Activates the venv
-1. Run the docker-compose that creates or run the localstack (kinesis) and lambda containers
-1. Create the Input Kinesis Stream
-1. Runs test_docker and test_kinesis
 
-Notes: special attention about the location of the files. The project is used for the Dockerfile build to avoid problems with the COPY. Additionally, it uses the docker-compose.yaml, .venv folder and Dockerfile which are in different files.
+### Integration Tests
 
-For running this in Windows:
-`make run_integration_tests`
+The integration tests validate the end-to-end flow of the MLOps pipeline, which involves receiving input data from Kinesis, processing it through a Lambda function, and returning predictions to another Kinesis stream. These tests ensure that the connections between services are functioning correctly.
 
-## CI/CD pipeline
+The integration test suite is divided into two main components:
 
-To complete this project, the CI/CD pipeline integrates the [infrastructure](#infrastructure-and-automation-terraform-infrastructure-as-code) and [good practices](#good-practices) sections, streamlining the deployment of new features.
+1. **test_docker.py**:
 
-This pipeline is designed for a typical workflow where direct pushes to the main branch are not allowed. While it assumes direct pushes to the develop branch are possible, it is generally better to push to a feature branch first and then create a pull request to develop.
+   - Tests the Lambda function deployed in a container
+   - Posts a sample kinesis_event to the input Kinesis stream
+   - Triggers the Lambda function
+   - Waits for and validates the response
+
+
+1. **test_kinesis.py**: verifies that the Kinesis output stream correctly receives the prediction event after the Lambda function execution
+
+A shell script `run.sh` streamlines the testing process. This script automates the following workflow:
+
+1. Builds the Dockerfile from deployment/streaming if no LOCAL_IMAGE is provided
+1. Activates the virtual environment
+1. Runs the docker-compose to create or start the LocalStack (simulating Kinesis) and Lambda containers
+1. Creates the Input Kinesis Stream
+1. Executes test_docker.py and test_kinesis.py
+
+#### Important Notes:
+
+- The project root is used for the Dockerfile build to avoid issues with the COPY command
+- The script references files in different locations, including docker-compose.yaml, the .venv folder, and the Dockerfile
+
+**To run the integration tests on Windows:**
+```bash
+make run_integration_tests
+```
+This command executes the entire integration test suite, providing a comprehensive validation of the MLOps pipeline's functionality.
+
+## CI/CD Pipeline
+
+The CI/CD pipeline integrates the infrastructure and good practices sections, streamlining the deployment of new features.
+
+This pipeline is designed for a workflow where direct pushes to the main branch are not allowed. While direct pushes to the develop branch are possible, it is generally better to push to a feature branch first and then create a pull request to develop.
 
 The pipeline consists of two parts:
 
 - **CI Pipeline**: Runs on pushes to the develop branch to ensure everything is functioning correctly.
 - **CD Pipeline**: Runs on pull requests to the main branch and deploys changes directly.
+
 Both pipelines are triggered only if files affecting any phase of the pipeline are changed or created. This is managed by specifying paths that need monitoring.
 
 CI/CD pipelines work together, as a reliable CI pipeline is essential for confidently deploying changes to production.
@@ -390,39 +524,35 @@ The CI pipeline ensures the system operates correctly when new features are adde
 
 This pipeline is triggered by pull requests to the main branch or pushes to the develop branch, as these actions are critical for monitoring in this workflow.
 
-To view the code, see the [CI pipeline configuration](.github/workflows/ci-tests.yml).
+The code for the CI pipeline can be found in the [CI pipeline configuration](.github/workflows/ci-tests.yml).
 
 ### CD Pipeline
+
 The CD pipeline enables seamless integration of new changes into the production system. It runs the terraform apply steps in production, saves the Lambda image in the ECR, and updates the Lambda function.
 
 This pipeline is triggered only when a pull request to the main branch is accepted, as this is the appropriate moment to deploy the previously implemented changes to production.
 
-To view the code, see the [CD pipeline configuration](.github/workflows/cd-deploy.yml).
+The code for the CD pipeline can be found in the [CD pipeline configuration](.github/workflows/cd-deploy.yml).
 
-### How to Use
+### Notes
 
-The pipelines are triggered automatically based on the actions mentioned above. Before utilizing the pipelines, please follow these steps:
+- You need to add AWS Credentials: in the repository's secrets configuration section, add `AWS_ACCESS_KEY_ID` and `AWS_SECRET_ACCESS_KEY`.
+- The pipelines are triggered automatically based on the actions mentioned above.
+- For testing workflows without Pull Requests temporarily modify the configuration file as follows:
 
-1. **Add AWS Credentials**:
-   - In the repository's secrets configuration section, add `AWS_ACCESS_KEY_ID` and `AWS_SECRET_ACCESS_KEY`.
-
-2. **Test Workflows without Pull Requests**:
-   - If you want to test the workflows without making pull requests, temporarily modify the configuration file as follows:
-
-    ```yaml
-    on:
-      push:
-        branches:
-          - 'main'  # Replace with the name of your branch
-    ```
-
+```yaml
+on:
+  push:
+    branches:
+      - 'main'  # Replace with the name of your branch
+```
 This modification allows the workflows to be triggered on pushes to the specified branch, facilitating easier testing.
 
 ## Future steps
-- Migrate Training Pipeline to cloud
-- Deployment of the web service
-- Added to the firts event streaming the web service
-- Automatize the training when the data drifs surpasses a treshold, instead of only alert
-- Deploy the monitoring module
-- Finish dynamic data ingestion in the monitoring module
-- Finish complete integration between dashboard monitoring and alerts
+- Migrate the Training Pipeline to the cloud for improved scalability and resource management.
+- Deploy the web service to make predictions accessible via API endpoints.
+- Add the web service to the first event streaming pipeline for real-time data processing.
+- Implement automated model retraining when data drift surpasses a predefined threshold, instead of only generating alerts.
+- Deploy the monitoring module to track model performance and data drift in real-time.
+- Complete the implementation of dynamic data ingestion in the monitoring module for more flexible data handling.
+- Finish the integration between the monitoring dashboard and alert system for comprehensive performance tracking and notification.
