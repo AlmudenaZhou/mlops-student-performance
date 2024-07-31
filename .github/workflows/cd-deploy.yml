@@ -51,7 +51,7 @@ jobs:
           ECR_REPOSITORY: ${{ steps.tf-apply.outputs.ecr_repo }}
           IMAGE_TAG: "latest"   # ${{ github.sha }}
         run: |
-          docker build -t ${ECR_REGISTRY}/${ECR_REPOSITORY}:${IMAGE_TAG} .
+          docker build -t ${ECR_REGISTRY}/${ECR_REPOSITORY}:${IMAGE_TAG} -f deployment/streaming/Dockerfile .
           docker push $ECR_REGISTRY/$ECR_REPOSITORY:$IMAGE_TAG
           echo "::set-output name=image_uri::$ECR_REGISTRY/$ECR_REPOSITORY:$IMAGE_TAG"
 
@@ -63,7 +63,6 @@ jobs:
       # In practice, you would also have a separate training pipeline to write new model artifacts to your Model Bucket in Prod.
 
         id: get-model-artifacts
-        working-directory: "06-best-practices/code"
         env:
           MODEL_BUCKET_DEV: "mlflow-artifact-student-performance"
           MODEL_BUCKET_PROD: ${{ steps.tf-apply.outputs.model_bucket }}
