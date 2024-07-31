@@ -1,7 +1,7 @@
 .venv
 .env
 dev.env
-mlruns/
+mlruns/*
 
 data/*
 monitoring/prefect/*
@@ -20,7 +20,7 @@ __pycache__
 mlflow.db
 *.parquet
 *.csv
-minmax_scaler/
+minmax_scaler/*
 *.log
 
 

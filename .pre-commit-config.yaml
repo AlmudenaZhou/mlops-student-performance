@@ -11,8 +11,6 @@ repos:
       stages: [commit, push]
     - id: check-yaml
       stages: [commit, push]
-    - id: check-added-large-files
-      stages: [commit, push]
 - repo: https://github.com/psf/black
   rev: 22.6.0
   hooks:
