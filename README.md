@@ -26,143 +26,172 @@
 
 ### Dataset Source
 
-The dataset used in this project is sourced from [Kaggle: Students Performance Dataset](https://www.kaggle.com/datasets/rabieelkharoua/students-performance-dataset).
+The dataset for this project is sourced from [Kaggle: Students Performance Dataset](https://www.kaggle.com/datasets/rabieelkharoua/students-performance-dataset).
 
 ### Project Objective
 
-The primary goal of this project is to develop a predictive model for classifying students' grades into distinct categories. This classification leverages various features such as parental involvement, extracurricular activities, and academic performance. The insights gained from this model aim to provide guidelines for understanding and improving student outcomes.
+The primary goal of this project is to develop a predictive model to classify students' grades into distinct categories. This classification will leverage various features such as parental involvement, extracurricular activities, and academic performance. The insights gained from this model aim to provide guidelines for understanding and improving student outcomes.
 
 ### Project Implementation
 
-The project will be divided into several distinct components:
+The project is divided into several components:
 
 1. **Training Pipeline:**
-
-    - The training pipeline will be managed by an orchestrator.
+    - Managed by an orchestrator, Mage.
     - Models and related artifacts will be saved to Amazon S3 for later use.
 
-1. **Inference Pipeline:**
+2. **Inference Pipeline:**
+    - Consumes the saved models for predictions.
+    - Can be implemented via Streaming or Flask Web Service. The Streaming method will be deployed in the cloud with full automation.
+    - This part will be tested locally using Makefiles.
 
-    - The saved models will be consumed by an inference pipeline for predictions.
-    - This can be done via Streaming or Flask Web Service. The one that will be deployed in the cloud
-    with the complete automatization will be the Streaming.
-    - This part will be tested locally using Makefiles and
+3. **Monitoring:**
+    - Includes monitoring capabilities using Evidently and Grafana.
 
-1. **Monitoring:**
-
-    - The project will include monitoring capabilities using Evidently along with Grafana
-
-1. **Infrastructure and Automation:**
-
+4. **Infrastructure and Automation:**
     - Terraform will be used for automation and infrastructure management.
 
-1. **CI/CD workflows**
-    - Code quality checks are included in the [CI workflow to ensure] a gold standard code.
-    - The project will include both unit and integration tests in the [CI workflow to ensure] robustness and reliability to seamlessly deploy the code and container images to the cloud through the CD workflow.
+5. **CI/CD Workflows:**
+    - Includes code quality checks in the CI workflow to ensure high-quality code.
+    - Incorporates both unit and integration tests in the CI workflow to ensure robustness and reliability, facilitating seamless deployment of code and container images to the cloud via the CD workflow.
 
-**Before start**:
+### Before You Start
 
-- It's mandatory to set the virtual environment
+1. **Set Up the Virtual Environment:**
 
-To create it:
-```
-python -m venv .venv
-```
-You can also do it through VS Code
+    1. To create the virtual environment:
+        ```bash
+        python -m venv .venv
+        ```
+        You can also set it up through VS Code.
+
+    1. To activate it and add the project path to the PYTHONPATH:
+
+        - In Linux:
+        ```bash
+        source .venv/bin/activate
+        echo "export PYTHONPATH=$PWD" >> .venv/bin/activate
+        pip install -r requirements.txt
+        ```
+
+        - In Windows CMD:
+        ```cmd
+        .venv\Scripts\activate.bat
+        echo set PYTHONPATH=%CD% >> .venv\Scripts\activate.bat
+        ```
+
+    1. **Install Dependencies:**
+        ```bash
+        pip install -r requirements.txt
+        pip install -r monitoring_requirements.txt
+        ```
+
+1. **Set Up Environment Variables:**
+
+    - An `example.env` file is provided with the environment variable names and brief explanations. Fill these in a new file called `.env`.
+
+1. **Configure AWS Credentials:**
+
+    - Download an access token using AWS IAM. For more information, read the [AWS IAM guide](https://docs.aws.amazon.com/IAM/latest/UserGuide/id_credentials_access-keys.html). You can set the credentials either by adding them to the AWS CLI configuration or by specifying them individually for each service in the `.env` file. The first method is recommended for easier local script usage.
 
 
-To activate it and add the project path to the PYTHONPATH:
-
-In Linux:
-```
-source .venv/Scripts/activate
-echo "export PYTHONPATH=$PWD" >> .venv/Scripts/activate
-pip install -r requirements.txt
-```
-
-In Windows CMD:
-```
-activate.bat
-echo set PYTHONPATH=%CD% >> .venv\Scripts\activate.bat
-```
-
-To install the dependencies:
-```
-pip install -r requirements.txt
-pip install -r monitoring_requirements.txt
-```
-
-
-- I have added an example.env with the environment variable names and a brief explanation. The program is expecting them to be filled in a new file called `.env`.
-
-- Configure the AWS credentials downloading an access token using the IAM. For more information read: https://docs.aws.amazon.com/IAM/latest/UserGuide/id_credentials_access-keys.html. You can set the credentials adding them to the AWS CLI configuration or from the .env individually to each service. I recommend the first one, as it's easier for using it locally with the scripts.
-
-
-
-### Technologies:
+### Technologies
 
 - **Python and Shell Script**: Programming
-    - Dev libraries: black, pytest, isort, pylint
-    - ML libraries: sklearn, pandas, numpy
+  - Dev libraries: `black`, `pytest`, `isort`, `pylint`
+  - ML libraries: `sklearn`, `pandas`, `numpy`
 - **Git and GitHub Actions**: Code versioning and CI/CD
-- **MLFlow**: Model Tracking and Registry
+- **MLFlow**: Model tracking and registry
 - **AWS**: Cloud provider
-    - **Lambda with ECR**: Model Serving
-    - **Kinesis**: Event Streaming
-    - **S3**: Data and MLFlow Artifact Path
-    - **Others**: IAM, CloudWatch
+  - **Lambda with ECR**: Model serving
+  - **Kinesis**: Event streaming
+  - **S3**: Data and MLFlow artifact storage
+  - **Others**: IAM, CloudWatch
 - **Terraform**: Infrastructure as Code (IaC)
-- **Mage**: Training Orchestration Pipeline
-- **Docker and docker-compose**: Create and Manage Containers
+- **Mage**: Training orchestration pipeline
+- **Docker and docker-compose**: Create and manage containers
 - **Evidently and Grafana**: Monitoring
-- **Other**: localstack, Makefile, pyproject.toml, Pre-commit
+- **Other**: LocalStack, Makefile, `pyproject.toml`, Pre-commit
 
 ## Data Preprocessing and Model Training
 
-All this phase runs in Mage.
+All preprocessing and model training runs in Mage. For more details, refer to the [research notebook](research.ipynb).
 
-More information about the de[cisions in [this] notebook](research.ipynb)
+### Pipelines
 
-It consists in 2 pipelines:
-1. Data processing:
-    - Demographic columns has been dropped to avoid bias in production due to the nature of these columns. Therefore, only the needed colums are kept.
-    - Ordinal categorical columns (ParentalEducation, ParentalSupport) and numerical columns with uniform distribution (StudyTimeWeekly, Absences) are scaled using MinMaxScaler from sklearn. This scaler is saved in mlflow as an artifact for the run.
-2. Model training:
-    - Hyperparameter tuning in the training set for several models
-    - Best model selection with the validation set, measured by f1-macro as there were unbalanced categories
-    - Register the chosen model and save it to S3
+1. **Data Processing:**
+    - Demographic columns are dropped to avoid bias in production, keeping only the necessary columns.
+    - Ordinal categorical columns (e.g., `ParentalEducation`, `ParentalSupport`) and numerical columns with uniform distribution (e.g., `StudyTimeWeekly`, `Absences`) are scaled using `MinMaxScaler` from `sklearn`. The scaler is saved in MLFlow as an artifact for the run.
 
-### How to use:
+2. **Model Training:**
+    - Hyperparameter tuning is performed on the training set for several models.
+    - The best model is selected based on validation set performance, measured by `f1-macro` due to unbalanced categories.
+    - The chosen model is registered and saved to S3.
 
-1. Download the data from: https://www.kaggle.com/datasets/rabieelkharoua/students-performance-dataset
-1. Place the csv in a folder named `data` in the project path and renamed it to `Student_performance_data.csv`
-1. Here the AWS credentials will be needed to be able to connect to it with mage.
-1. Add the secrets in the [mage io_config](orchestrator/student-performance/io_config.yaml) through the env or hardcoding them there. For more information: https://docs.mage.ai/production/deploying-to-cloud/secrets/AWS#working-with-secrets-in-mage
-1. From the [orchestrator folder](orchestrator) run in the terminal `docker-compose up -d` to get the mlflow and mage servers running.
-1. Enter `http://localhost:6789/` to see the mage ui. Optionally, you can enter to `http://localhost:5000/` to check if mlflow is running correctly
-1. Inside Mage, go to pipelines and run first the preprocessing pipeline to generate the data for training the model
-1. Run the model pipeline to save automatically the best model in the s3 bucket with its version and the preprocessing model, along with the results of all the experiments that have been done.
-1. Check that the experiment folder `1` is in your S3 bucket.
+### How to Use
+
+1. **Download the Data:**
+    - Download the dataset from [Kaggle: Students Performance Dataset](https://www.kaggle.com/datasets/rabieelkharoua/students-performance-dataset).
+    - Place the CSV file in a folder named `data` in the project directory and rename it to `Student_performance_data.csv`.
+
+2. **Set Up AWS Credentials:**
+    - AWS credentials are needed to connect with Mage.
+    - Add the secrets in the [Mage io_config](orchestrator/student-performance/io_config.yaml) via environment variables or by hardcoding them. For more information, refer to the [Mage documentation](https://docs.mage.ai/production/deploying-to-cloud/secrets/AWS#working-with-secrets-in-mage).
+
+3. **Run Docker Compose:**
+    - From the [orchestrator folder](orchestrator), run the following command in the terminal to start the MLFlow and Mage servers:
+      ```bash
+      docker-compose up -d
+      ```
+
+4. **Access Mage and MLFlow:**
+    - Visit `http://localhost:6789/` to access the Mage UI.
+    - Optionally, visit `http://localhost:5000/` to check if MLFlow is running correctly.
+
+5. **Run Pipelines in Mage:**
+    - In Mage, go to pipelines and run the preprocessing pipeline to generate data for training the model.
+    - Run the model pipeline to save the best model automatically in the S3 bucket, along with its version, the preprocessing model, and the results of all experiments.
+
+6. **Verify S3 Bucket:**
+    - Ensure that the experiment folder `1` is present in your S3 bucket.
+
 
 ## Inference Pipeline: Model Serving
 
-This will contained the inference pipeline. Once the model has been trained and saved, it's time to use it. This part is intended to retrieve the models from the S3 and receive an input and with both, predict the GPA for the user and send the result back. For this, 2 ways has been considered:
+The inference pipeline utilizes the trained and saved model to predict the GPA for users based on their input. This section outlines two methods for deploying the inference pipeline: Web Service and Streaming.
 
-- **Web Service**: deploying a Flask app in an EC2, you can receive requests from users through its endpoint and send it back via frontend. This has been only developed locally and has not been deployed. However, can be a possibility to explore in the future.
+### Web Service
 
-    To deploy it in local: `make run_flask`
+Deploying a Flask app on an EC2 instance allows the system to receive user requests through an endpoint and send responses back via a frontend. This method has been developed locally but has not yet been deployed. It remains a potential future option.
 
-    To deploy it in local using mlflow experiment tracking: `make run_flask_with_mlflow`
+- **Deploy Locally:**
+  - To deploy the Flask app locally:
+    ```bash
+    make run_flask
+    ```
+  - To deploy the Flask app locally with MLFlow experiment tracking:
+    ```bash
+    make run_flask_with_mlflow
+    ```
+  - To test the Flask app locally:
+    ```bash
+    make run_web_test
+    ```
 
-    And to test it locally: `make run_web_test`
+### Streaming
 
-- **Streaming**: using kinesis to handle the events from the users and to give back the response, this can be deployed using a serverless based on events architecture.
+The final deployment of the project leverages a serverless event-driven architecture using AWS Kinesis to handle user events and provide responses.
 
-    This is the way that has been chosen for the final deployment of this project. For this, the lambda of the deployment code has been dockerized to be able to easily deploy in the cloud. [Dockerfile](deployment/streaming/Dockerfile). It's deployed along with the utils dependencies.
+I have chosen this method for its scalability and efficiency. The deployment code's Lambda function is dockerized to ensure seamless cloud deployment. You can find the Dockerfile [here](deployment/streaming/Dockerfile), which includes all necessary utility dependencies.
 
-    This is run and tested in: [Integration tests](#integration-tests)
+The streaming approach is run and tested in:
 
-In both cases, the scaler and model is obtained from the model registry developed in the Research and uploaded to the S3. And in both cases, it can be done through mlflow or using boto3 to avoid the need of uploading the database to load the artifacts.
+- **Locally**: [Integration tests](#integration-tests).
+- **Production**: [terraform](#infrastructure-and-automation-terraform-infrastructure-as-code) and [CI/CD Pipeline](#cicd-pipeline)
+
+### Common Elements
+
+In both the Web Service and Streaming methods, the scaler and model are retrieved from the model registry developed during the research phase and uploaded to S3. This can be achieved using MLFlow or Boto3, avoiding the need to upload the database to load the artifacts.
 
 ## Monitoring: Model Maintenance
 
