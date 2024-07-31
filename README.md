@@ -3,9 +3,6 @@
 ## Index
 
 - [Problem Statement](#problem-statement)
-    - [Dataset Source](#dataset-source)
-    - [Project Objective](#project-objective)
-    - [Project Implementation](#project-implementation)
     - [Technologies](#technologies)
 - [Data Preprocessing and Model Training](#data-preprocessing-and-model-training)
 - [Inference Pipeline: Model Serving](#inference-pipeline-model-serving)
