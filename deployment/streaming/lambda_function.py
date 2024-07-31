@@ -1,6 +1,6 @@
 import os
 
-from utils import init_model_service_with_kinesis
+from utils.model_serving import init_model_service_with_kinesis
 
 TEST_RUN = os.getenv("TEST_RUN", "False") == "True"
 
