@@ -16,7 +16,10 @@ disable = [
 ]
 
 [tool.pylint.MASTER]
-ignore-paths = '^orchestrator/.*$'
+ignore-paths = [
+    "^orchestrator/.*$",
+    "^.venv/.*$"
+]
 
 [tool.black]
 line-length = 88
