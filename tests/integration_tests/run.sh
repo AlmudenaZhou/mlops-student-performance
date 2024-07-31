@@ -26,7 +26,7 @@ sleep 5
 
 aws --endpoint-url=http://localhost:4566 \
     kinesis create-stream \
-    --stream-name ${PREDICTIONS_STREAM_NAME} \
+    --stream-name ${INPUT_STREAM_NAME} \
     --shard-count 1
 
 python test_docker.py
