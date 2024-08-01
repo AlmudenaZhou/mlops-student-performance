@@ -68,7 +68,6 @@ The project is divided into several components:
         ```bash
         source .venv/bin/activate
         echo "export PYTHONPATH=$PWD" >> .venv/bin/activate
-        pip install -r requirements.txt
         ```
 
         - In Windows CMD:
@@ -269,39 +268,6 @@ Example of an alert email:
 
 ![Email alert](img/mail_example.png)
 
-## Infrastructure and Automation: Terraform, Infrastructure as Code
-
-The infrastructure of the project deployment will be done using Terraform. This will allow us to automate the deployment and deletion of the resources.
-
-### Development Environments
-I used 2 configurations:
-- **stage**: test the changes here first
-- **production**: resources to point for the real product
-
-This is done as a good practice for not breaking the production environment. Usually, as the project is more relevant, the number of configurations increase adding some extra such local and dev. Here I decided to only use one for simplicity.
-
-### Modules
-The infrastructure is composed by 4 modules:
-
-- **ecr**: saves the image for the lambda function into ECR. In the main.tf of this module, the image build code by default is for Linux systems. However, if you are running it on Windows, you need to swap the function with the code commented below.
-- **kinesis**: created 2 kinesis streams, one for the inputs and another for the outputs.
-- **lambda**: generates the iam role for using the kinesis services and the lambda service using the input kinesis stream as trigger, the ecr image and the previous iam role.
-- **s3**: bucket for saving the mlflow artifacts
-
-### How to use:
-1. Check the aws credentials are well configured
-1. You need to comment from [main.tf](infrastructure/main.tf) the first block: `terraform`, as you don't have any .tfstate generated yet.
-1. Run `terraform init`, `terraform plan -var-file=vars/{config_name}.tfvars` and `terraform apply -var-file=vars/{config_name}.tfvars` where config_name is stg or prod.
-
-    This should print on your terminal (the names will depend on your names at the .tfvars):
-
-    ![img](img/terraform_apply_output.png)
-
-
-
-1. Create a S3 bucket and upload the `terraform.tfstate` generated in the previous step and renamed it to `prod-terraform.tfstate` or `stg-terraform.tfstate` depending on what you run as config_name.
-1. Uncomment the terraform block from [main.tf](infrastructure/main.tf) and change the bucket, key and region to match your bucket.
-1. Test the new configuration running again the third step.
 
 ## Infrastructure as Code with Terraform
 
@@ -404,7 +370,7 @@ To use the Makefile, simply run:
 make <target>
 ```
 
-Where <target> is the specific command you want to execute.
+Where `<target>` is the specific command you want to execute.
 For a complete list of available commands, refer to the Makefile in the project root.
 
 ### Pre-commit Hooks
