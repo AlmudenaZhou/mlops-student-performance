@@ -2,21 +2,47 @@
 
 ## Index
 
-- [Problem Statement](#problem-statement)
+- [Student Performance](#student-performance)
+  - [Index](#index)
+  - [Problem Statement](#problem-statement)
+    - [Dataset Source](#dataset-source)
+    - [Project Objective](#project-objective)
+    - [Project Implementation](#project-implementation)
+    - [Before You Start](#before-you-start)
     - [Technologies](#technologies)
-- [Data Preprocessing and Model Training](#data-preprocessing-and-model-training)
-- [Inference Pipeline: Model Serving](#inference-pipeline-model-serving)
-- [Monitoring: Model Maintenance](#monitoring-model-maintenance)
-- [Infrastructure and Automation: Terraform, Infrastructure as Code](#infrastructure-and-automation-terraform-infrastructure-as-code)
-- [Development Practices](#development-practices)
-    - [Linter and Code Formatters](#linter-and-code-formatters)
+  - [Data Preprocessing and Model Training](#data-preprocessing-and-model-training)
+    - [Pipelines](#pipelines)
+    - [How to Use](#how-to-use)
+  - [Inference Pipeline: Model Serving](#inference-pipeline-model-serving)
+    - [Web Service](#web-service)
+    - [Streaming](#streaming)
+    - [Common Elements](#common-elements)
+  - [Monitoring: Model Maintenance](#monitoring-model-maintenance)
+    - [Overview](#overview)
+    - [Dashboards](#dashboards)
+      - [Results](#results)
+    - [Alerts](#alerts)
+      - [How to Use](#how-to-use-1)
+  - [Infrastructure as Code with Terraform](#infrastructure-as-code-with-terraform)
+    - [Environment Configurations](#environment-configurations)
+    - [Terraform Modules](#terraform-modules)
+    - [Deployment Instructions](#deployment-instructions)
+    - [Notes](#notes)
+  - [Development Practices](#development-practices)
+    - [Code Quality Tools](#code-quality-tools)
     - [Makefile](#makefile)
-    - [Precommit hooks](#precommit-hooks)
-    - [Tests](#tests)
-        - [Unit tests](#unit-tests)
-        - [Integration tests](#integration-tests)
-- [CI/CD pipeline](#cicd-pipeline)
-- [Future steps](#future-steps)
+    - [Pre-commit Hooks](#pre-commit-hooks)
+      - [Setup](#setup)
+      - [Configured Hooks](#configured-hooks)
+  - [Testing](#testing)
+    - [Unit Tests](#unit-tests)
+    - [Integration Tests](#integration-tests)
+      - [Important Notes:](#important-notes)
+  - [CI/CD Pipeline](#cicd-pipeline)
+    - [CI Pipeline](#ci-pipeline)
+    - [CD Pipeline](#cd-pipeline)
+    - [Notes](#notes-1)
+  - [Future steps](#future-steps)
 
 
 ## Problem Statement
@@ -30,6 +56,8 @@ The dataset for this project is sourced from [Kaggle: Students Performance Datas
 The primary goal of this project is to develop a predictive model to classify students' grades into distinct categories. This classification will leverage various features such as parental involvement, extracurricular activities, and academic performance. The insights gained from this model aim to provide guidelines for understanding and improving student outcomes.
 
 ### Project Implementation
+
+<img src="drawing.jpg" alt="drawing" width="200"/>
 
 The project is divided into several components:
 
