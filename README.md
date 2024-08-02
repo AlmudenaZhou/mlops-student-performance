@@ -57,7 +57,7 @@ The primary goal of this project is to develop a predictive model to classify st
 
 ### Project Implementation
 
-<img src="drawing.jpg" alt="drawing" width="200"/>
+<img src="img/global_schema.png" alt="global schema" width="500"/>
 
 The project is divided into several components:
 
