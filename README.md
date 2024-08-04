@@ -4,7 +4,7 @@
 
 - [Problem Statement](#problem-statement)
     - [Technologies](#technologies)
-- [Data Preprocessing and Model Training](#data-preprocessing-and-model-training)
+- [Data Preprocessing and Model Training with Mage](#data-preprocessing-and-model-training-with-mage)
 - [Inference Pipeline: Model Serving](#inference-pipeline-model-serving)
 - [Monitoring: Model Maintenance](#monitoring-model-maintenance)
 - [Infrastructure and Automation: Terraform, Infrastructure as Code](#infrastructure-and-automation-terraform-infrastructure-as-code)
@@ -109,20 +109,23 @@ The project is divided into several components:
 - **Evidently and Grafana**: Monitoring
 - **Other**: LocalStack, Makefile, `pyproject.toml`, Pre-commit
 
-## Data Preprocessing and Model Training
+## Data Preprocessing and Model Training with Mage
 
 All preprocessing and model training runs in Mage. For more details, refer to the [research notebook](research.ipynb).
 
 ### Pipelines
 
-1. **Data Processing:**
+1. **Data Preprocessing:**
     - Demographic columns are dropped to avoid bias in production, keeping only the necessary columns.
     - Ordinal categorical columns (e.g., `ParentalEducation`, `ParentalSupport`) and numerical columns with uniform distribution (e.g., `StudyTimeWeekly`, `Absences`) are scaled using `MinMaxScaler` from `sklearn`. The scaler is saved in MLFlow as an artifact for the run.
+
+    ![data preprocessing](img/data_preprocessing.png)
 
 2. **Model Training:**
     - Hyperparameter tuning is performed on the training set for several models.
     - The best model is selected based on validation set performance, measured by `f1-macro` due to unbalanced categories.
     - The chosen model is registered and saved to S3.
+    ![model training](img/model_training.png)
 
 ### How to Use
 
@@ -130,25 +133,29 @@ All preprocessing and model training runs in Mage. For more details, refer to th
     - Download the dataset from [Kaggle: Students Performance Dataset](https://www.kaggle.com/datasets/rabieelkharoua/students-performance-dataset).
     - Place the CSV file in a folder named `data` in the project directory and rename it to `Student_performance_data.csv`.
 
-2. **Set Up AWS Credentials:**
+1. **Set Up AWS Credentials:**
     - AWS credentials are needed to connect with Mage.
     - Add the secrets in the [Mage io_config](orchestrator/student-performance/io_config.yaml) via environment variables or by hardcoding them. For more information, refer to the [Mage documentation](https://docs.mage.ai/production/deploying-to-cloud/secrets/AWS#working-with-secrets-in-mage).
 
-3. **Run Docker Compose:**
+1. **Create .env**:
+    - In the [orchestrator folder](orchestrator), create a `.env` file
+    - Add `PROJECT_NAME=<project_name>`
+
+1. **Run Docker Compose:**
     - From the [orchestrator folder](orchestrator), run the following command in the terminal to start the MLFlow and Mage servers:
       ```bash
       docker-compose up -d
       ```
 
-4. **Access Mage and MLFlow:**
+1. **Access Mage and MLFlow:**
     - Visit `http://localhost:6789/` to access the Mage UI.
     - Optionally, visit `http://localhost:5000/` to check if MLFlow is running correctly.
 
-5. **Run Pipelines in Mage:**
+1. **Run Pipelines in Mage:**
     - In Mage, go to pipelines and run the preprocessing pipeline to generate data for training the model.
     - Run the model pipeline to save the best model automatically in the S3 bucket, along with its version, the preprocessing model, and the results of all experiments.
 
-6. **Verify S3 Bucket:**
+1. **Verify S3 Bucket:**
     - Ensure that the experiment folder `1` is present in your S3 bucket.
 
 
@@ -177,6 +184,10 @@ Deploying a Flask app on an EC2 instance allows the system to receive user reque
 ### Streaming
 
 The final deployment of the project leverages a serverless event-driven architecture using AWS Kinesis to handle user events and provide responses.
+
+![Streaming Deployment](img/streaming_deployment.png)
+
+More details in [terraform: IaC](#infrastructure-as-code-with-terraform)
 
 I have chosen this method for its scalability and efficiency. The deployment code's Lambda function is dockerized to ensure seamless cloud deployment. You can find the Dockerfile [here](deployment/streaming/Dockerfile), which includes all necessary utility dependencies.
 
@@ -283,6 +294,8 @@ I maintain two primary environments:
 This separation allows for safe testing and validation before affecting the production environment. For larger projects, consider adding additional environments like `local` and `dev`.
 
 ### Terraform Modules
+
+![Streaming Deployment](img/streaming_deployment.png)
 
 The infrastructure is composed of four main modules:
 
@@ -472,6 +485,8 @@ This command executes the entire integration test suite, providing a comprehensi
 The CI/CD pipeline integrates the infrastructure and good practices sections, streamlining the deployment of new features.
 
 This pipeline is designed for a workflow where direct pushes to the main branch are not allowed. While direct pushes to the develop branch are possible, it is generally better to push to a feature branch first and then create a pull request to develop.
+
+![CI CD Pipeline](img/github_ci_cd.png)
 
 The pipeline consists of two parts:
 
