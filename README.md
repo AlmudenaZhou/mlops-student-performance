@@ -219,6 +219,8 @@ For alerts, **Evidently** handles drift detection, while **SES** (Simple Email S
 
 ### Dashboards
 
+![Monitoring Workflow](img/monitoring_workflow.png)
+
 The dashboard monitoring process is divided into two main parts:
 
 1. **Reference Data Preparation:**
