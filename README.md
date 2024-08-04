@@ -7,7 +7,7 @@
 - [Data Preprocessing and Model Training with Mage](#data-preprocessing-and-model-training-with-mage)
 - [Inference Pipeline: Model Serving](#inference-pipeline-model-serving)
 - [Monitoring: Model Maintenance](#monitoring-model-maintenance)
-- [Infrastructure and Automation: Terraform, Infrastructure as Code](#infrastructure-and-automation-terraform-infrastructure-as-code)
+- [Infrastructure as Code with Terraform](#infrastructure-as-code-with-terraform)
 - [Development Practices](#development-practices)
     - [Linter and Code Formatters](#linter-and-code-formatters)
     - [Makefile](#makefile)
