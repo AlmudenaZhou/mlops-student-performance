@@ -31,6 +31,8 @@ The primary goal of this project is to develop a predictive model to classify st
 
 ### Project Implementation
 
+<img src="img/global_schema.png" alt="global schema" width="700"/>
+
 The project is divided into several components:
 
 1. **Training Pipeline:**
