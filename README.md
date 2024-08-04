@@ -127,6 +127,7 @@ All preprocessing and model training runs in Mage. For more details, refer to th
     - Hyperparameter tuning is performed on the training set for several models.
     - The best model is selected based on validation set performance, measured by `f1-macro` due to unbalanced categories.
     - The chosen model is registered and saved to S3.
+
     ![model training](img/model_training.png)
 
 ### How to Use
