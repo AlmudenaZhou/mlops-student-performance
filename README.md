@@ -188,7 +188,7 @@ Deploying a Flask app on an EC2 instance allows the system to receive user reque
 
 The final deployment of the project leverages a serverless event-driven architecture using AWS Kinesis to handle user events and provide responses.
 
-![Streaming Deployment](img/streaming_deployment.png)
+<img src="img/streaming_deployment.png" alt="Streaming Deployment" width="700"/>
 
 More details in [terraform: IaC](#infrastructure-as-code-with-terraform)
 
@@ -220,7 +220,7 @@ For alerts, **Evidently** handles drift detection, while **SES** (Simple Email S
 
 ### Dashboards
 
-![Monitoring Workflow](img/monitoring_workflow.png)
+<img src="img/monitoring_workflow.png" alt="Monitoring Workflow" width="700"/>
 
 The dashboard monitoring process is divided into two main parts:
 
@@ -243,9 +243,10 @@ Metrics and visualizations are based on the validation dataset, analyzed in 15-m
 
 Refer to the images below for visual insights:
 
-![Dataset Drift](img/dataset_drift.png)
-![Prediction Drift](img/prediction_drift.png)
-![Target Drift](img/target_drift.png)
+
+<img src="img/img/dataset_drift.png" alt="Dataset Drift" width="700"/>
+<img src="img/prediction_drift.png" alt="Prediction Drift" width="700"/>
+<img src="img/target_drift.png" alt="Target Drift" width="700"/>
 
 The high percentage of drifted features might indicate a need for further investigation, especially if the drift is not sample-related.
 
@@ -282,8 +283,7 @@ For demonstration purposes, the validation data is intentionally modified to tri
 
 Example of an alert email:
 
-![Email alert](img/mail_example.png)
-
+<img src="img/mail_example.png" alt="Email alert" width="700"/>
 
 ## Infrastructure as Code with Terraform
 
@@ -300,7 +300,7 @@ This separation allows for safe testing and validation before affecting the prod
 
 ### Terraform Modules
 
-![Streaming Deployment](img/streaming_deployment.png)
+<img src="img/streaming_deployment.png" alt="Streaming Deployment" width="700"/>
 
 The infrastructure is composed of four main modules:
 
@@ -491,7 +491,7 @@ The CI/CD pipeline integrates the infrastructure and good practices sections, st
 
 This pipeline is designed for a workflow where direct pushes to the main branch are not allowed. While direct pushes to the develop branch are possible, it is generally better to push to a feature branch first and then create a pull request to develop.
 
-![CI CD Pipeline](img/github_ci_cd.png)
+<img src="img/github_ci_cd.png" alt="CI CD Pipeline" width="700"/>
 
 The pipeline consists of two parts:
 
