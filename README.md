@@ -188,7 +188,7 @@ Deploying a Flask app on an EC2 instance allows the system to receive user reque
 
 The final deployment of the project leverages a serverless event-driven architecture using AWS Kinesis to handle user events and provide responses.
 
-<img src="img/streaming_deployment.png" alt="Streaming Deployment" width="700"/>
+<img src="img/streaming_deployment.png" alt="Streaming Deployment" width="500"/>
 
 More details in [terraform: IaC](#infrastructure-as-code-with-terraform)
 
@@ -220,7 +220,7 @@ For alerts, **Evidently** handles drift detection, while **SES** (Simple Email S
 
 ### Dashboards
 
-<img src="img/monitoring_workflow.png" alt="Monitoring Workflow" width="700"/>
+<img src="img/monitoring_workflow.png" alt="Monitoring Workflow" width="500"/>
 
 The dashboard monitoring process is divided into two main parts:
 
@@ -244,7 +244,7 @@ Metrics and visualizations are based on the validation dataset, analyzed in 15-m
 Refer to the images below for visual insights:
 
 
-<img src="img/img/dataset_drift.png" alt="Dataset Drift" width="700"/>
+<img src="img/dataset_drift.png" alt="Dataset Drift" width="700"/>
 <img src="img/prediction_drift.png" alt="Prediction Drift" width="700"/>
 <img src="img/target_drift.png" alt="Target Drift" width="700"/>
 
@@ -300,7 +300,7 @@ This separation allows for safe testing and validation before affecting the prod
 
 ### Terraform Modules
 
-<img src="img/streaming_deployment.png" alt="Streaming Deployment" width="700"/>
+<img src="img/streaming_deployment.png" alt="Streaming Deployment" width="500"/>
 
 The infrastructure is composed of four main modules:
 
@@ -491,7 +491,7 @@ The CI/CD pipeline integrates the infrastructure and good practices sections, st
 
 This pipeline is designed for a workflow where direct pushes to the main branch are not allowed. While direct pushes to the develop branch are possible, it is generally better to push to a feature branch first and then create a pull request to develop.
 
-<img src="img/github_ci_cd.png" alt="CI CD Pipeline" width="700"/>
+<img src="img/github_ci_cd.png" alt="CI CD Pipeline" width="500"/>
 
 The pipeline consists of two parts:
 
